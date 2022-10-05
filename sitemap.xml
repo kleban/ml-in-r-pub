@@ -2,54 +2,58 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://kleban.github.io/ml-in-r-book/index.html</loc>
-    <lastmod>2022-10-05T19:35:22.255Z</lastmod>
+    <lastmod>2022-10-05T19:40:30.212Z</lastmod>
   </url>
   <url>
     <loc>https://kleban.github.io/ml-in-r-book/010-intro.html</loc>
-    <lastmod>2022-10-05T19:35:22.257Z</lastmod>
+    <lastmod>2022-10-05T19:40:30.213Z</lastmod>
   </url>
   <url>
     <loc>https://kleban.github.io/ml-in-r-book/020-feature-engeneering.html</loc>
-    <lastmod>2022-10-05T19:35:22.257Z</lastmod>
+    <lastmod>2022-10-05T19:40:30.214Z</lastmod>
   </url>
   <url>
     <loc>https://kleban.github.io/ml-in-r-book/023-feature-engeneering-woe-binning.html</loc>
-    <lastmod>2022-10-05T19:35:22.263Z</lastmod>
+    <lastmod>2022-10-05T19:40:30.221Z</lastmod>
   </url>
   <url>
     <loc>https://kleban.github.io/ml-in-r-book/030-supervised-learning.html</loc>
-    <lastmod>2022-10-05T19:35:22.264Z</lastmod>
+    <lastmod>2022-10-05T19:40:30.222Z</lastmod>
   </url>
   <url>
     <loc>https://kleban.github.io/ml-in-r-book/031-supervised-learning-linear-regression-1.html</loc>
-    <lastmod>2022-10-05T19:35:22.280Z</lastmod>
+    <lastmod>2022-10-05T19:40:30.234Z</lastmod>
   </url>
   <url>
     <loc>https://kleban.github.io/ml-in-r-book/032-supervised-learning-linear-regression-2.html</loc>
-    <lastmod>2022-10-05T19:35:22.304Z</lastmod>
+    <lastmod>2022-10-05T19:40:30.253Z</lastmod>
   </url>
   <url>
     <loc>https://kleban.github.io/ml-in-r-book/033-supervised-learning-desicion-trees-regression.html</loc>
-    <lastmod>2022-10-05T19:35:22.311Z</lastmod>
+    <lastmod>2022-10-05T19:40:30.262Z</lastmod>
   </url>
   <url>
     <loc>https://kleban.github.io/ml-in-r-book/034-supervised-learning-neutal-networks-regression.html</loc>
-    <lastmod>2022-10-05T19:35:22.334Z</lastmod>
+    <lastmod>2022-10-05T19:40:30.288Z</lastmod>
   </url>
   <url>
     <loc>https://kleban.github.io/ml-in-r-book/035-supervised-learning-logistic-regression.html</loc>
-    <lastmod>2022-10-05T19:35:22.345Z</lastmod>
+    <lastmod>2022-10-05T19:40:30.314Z</lastmod>
   </url>
   <url>
     <loc>https://kleban.github.io/ml-in-r-book/036-supervised-learning-desicion-trees-classification.html</loc>
-    <lastmod>2022-10-05T19:35:22.363Z</lastmod>
+    <lastmod>2022-10-05T19:40:30.334Z</lastmod>
   </url>
   <url>
     <loc>https://kleban.github.io/ml-in-r-book/037-supervised-learning-neural-network-classification.html</loc>
-    <lastmod>2022-10-05T19:35:22.371Z</lastmod>
+    <lastmod>2022-10-05T19:40:30.340Z</lastmod>
+  </url>
+  <url>
+    <loc>https://kleban.github.io/ml-in-r-book/040-unsupervised-learning.html</loc>
+    <lastmod>2022-10-05T19:40:30.342Z</lastmod>
   </url>
   <url>
     <loc>https://kleban.github.io/ml-in-r-book/041-unsupervised-learning-clustering-kmeans.html</loc>
-    <lastmod>2022-10-05T19:35:22.380Z</lastmod>
+    <lastmod>2022-10-05T19:40:30.355Z</lastmod>
   </url>
 </urlset>

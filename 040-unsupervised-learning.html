@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Математичне моделювання в R - ТЕМА 2. КОНСТРУЮВАННЯ ОЗНАК</title>
+<title>Математичне моделювання в R - ТЕМА 4. НАВЧАННЯ “БЕЗ УЧИТЕЛЯ”</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,8 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./023-feature-engeneering-woe-binning.html" rel="next">
-<link href="./010-intro.html" rel="prev">
+<link href="./041-unsupervised-learning-clustering-kmeans.html" rel="next">
+<link href="./037-supervised-learning-neural-network-classification.html" rel="prev">
 <link href="./img/favicon.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -72,7 +72,7 @@ ul.task-list li input[type="checkbox"] {
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">ТЕМА 2. КОНСТРУЮВАННЯ ОЗНАК</h1>
+      <h1 class="quarto-secondary-nav-title">ТЕМА 4. НАВЧАННЯ “БЕЗ УЧИТЕЛЯ”</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -131,7 +131,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./020-feature-engeneering.html" class="sidebar-item-text sidebar-link active">ТЕМА 2. КОНСТРУЮВАННЯ ОЗНАК</a>
+            <a href="./020-feature-engeneering.html" class="sidebar-item-text sidebar-link">ТЕМА 2. КОНСТРУЮВАННЯ ОЗНАК</a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -191,7 +191,7 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./040-unsupervised-learning.html" class="sidebar-item-text sidebar-link">ТЕМА 4. НАВЧАННЯ "БЕЗ УЧИТЕЛЯ"</a>
+            <a href="./040-unsupervised-learning.html" class="sidebar-item-text sidebar-link active">ТЕМА 4. НАВЧАННЯ "БЕЗ УЧИТЕЛЯ"</a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -216,7 +216,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">ТЕМА 2. КОНСТРУЮВАННЯ ОЗНАК</h1>
+<h1 class="title d-none d-lg-block">ТЕМА 4. НАВЧАННЯ “БЕЗ УЧИТЕЛЯ”</h1>
 </div>
 
 
@@ -232,10 +232,11 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Курс: “Математичне моделювання в R”</p>
 <hr>
-<p>У даній темі розкрито основні принципи інженерії фіч та методів трансформації даних для підвищення якості, швидкості побудови математичних моделей.</p>
+<p>У даній темі розкрито основні принципи використання методів машинного навчання “без вчителя”: кластеризація, зменшення розмірності, асоціативні правила.</p>
+<p>Для практичного закріплення знань використовують можливості бібліотек R: <code>cluster</code>, <code>apriori</code> та інші.</p>
 <hr>
-<iframe src="https://onedrive.live.com/embed?cid=0A1340BA71B3F0AA&amp;resid=A1340BA71B3F0AA%214540&amp;authkey=AN8QL0Jbs6aMVeY&amp;em=2&amp;wdAr=1.7777777777777777" width="100%" height="400px" frameborder="0">
-<p>Це вбудований документ <a target="_blank" href="https://office.com">Microsoft Office</a> на платформі <a target="_blank" href="https://office.com/webapps">Office</a>.</p>
+<iframe src="https://onedrive.live.com/embed?cid=0A1340BA71B3F0AA&amp;resid=A1340BA71B3F0AA%214539&amp;authkey=AI_KhHqmSyn5fcE&amp;em=2&amp;wdAr=1.7777777777777777&amp;wdEaaCheck=1" width="100%" height="400px" frameborder="0">
+Це вбудований документ <a target="_blank" href="https://office.com">Microsoft Office</a> на платформі <a target="_blank" href="https://office.com/webapps">Office</a>.
 </iframe>
 <hr>
 
@@ -342,13 +343,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./010-intro.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">ТЕМА 1. ВСТУП ДО КУРСУ</span>
+      <a href="./037-supervised-learning-neural-network-classification.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Нейронні мережі. Deep Learning. Класифікація. Кредитний скоринг</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./023-feature-engeneering-woe-binning.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Woe Binning</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./041-unsupervised-learning-clustering-kmeans.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Метод k-середніх</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
