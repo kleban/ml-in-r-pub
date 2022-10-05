@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.251">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Математичне моделювання в R - 8&nbsp; Нейронні мережі. Deep Learning. Класифікація. Кредитний скоринг</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./036-supervised-learning-desicion-trees-classification.html" rel="prev">
+<link href="./img/favicon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Нейронні мережі. Deep Learning. Класифікація. Кредитний скоринг</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Математичне моделювання в R</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/kleban/ml-in-r-book/" title="Source Code" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="" title="Share" id="sidebar-tool-dropdown-0" class="sidebar-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-share"></i></a>
+    <ul class="dropdown-menu" aria-labelledby="sidebar-tool-dropdown-0">
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+            <i class="bi bi-bi-twitter pe-1"></i>
+          Twitter
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=|url|">
+            <i class="bi bi-bi-facebook pe-1"></i>
+          Facebook
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+            <i class="bi bi-bi-linkedin pe-1"></i>
+          LinkedIn
+          </a>
+        </li>
+    </ul>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Про курс</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./010-intro.html" class="sidebar-item-text sidebar-link">ТЕМА 1. ВСТУП ДО КУРСУ</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./020-feature-engeneering.html" class="sidebar-item-text sidebar-link">ТЕМА 2. КОНСТРУЮВАННЯ ОЗНАК</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./023-feature-engeneering-woe-binning.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Woe Binning</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./030-supervised-learning.html" class="sidebar-item-text sidebar-link">ТЕМА 3. НАВЧАННЯ "З УЧИТЕЛЕМ"</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./031-supervised-learning-linear-regression-1.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Лінійна регресія. Престиж професій</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./032-supervised-learning-linear-regression-2.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Лінійна регресія. Прокат велосипедів</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./033-supervised-learning-desicion-trees-regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Дерева рішень. Регресія. Баланс кредитної карти</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./034-supervised-learning-neutal-networks-regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Нейронні мережі. Регресія. Вартість житла</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./035-supervised-learning-logistic-regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Логістична регресія. Класифікація. Титанік</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./036-supervised-learning-desicion-trees-classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Дерева рішень. Класифікація. Депозити</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./037-supervised-learning-neural-network-classification.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Нейронні мережі. Deep Learning. Класифікація. Кредитний скоринг</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Зміст</h2>
+   
+  <ul>
+  <li><a href="#набір-даних" id="toc-набір-даних" class="nav-link active" data-scroll-target="#набір-даних"><span class="toc-section-number">8.1</span>  Набір даних</a></li>
+  <li><a href="#оглядовий-аналіз-даних" id="toc-оглядовий-аналіз-даних" class="nav-link" data-scroll-target="#оглядовий-аналіз-даних"><span class="toc-section-number">8.2</span>  Оглядовий аналіз даних</a>
+  <ul class="collapse">
+  <li><a href="#таблиця-customers" id="toc-таблиця-customers" class="nav-link" data-scroll-target="#таблиця-customers"><span class="toc-section-number">8.2.1</span>  Таблиця <code>customers</code></a></li>
+  <li><a href="#таблиця-cards" id="toc-таблиця-cards" class="nav-link" data-scroll-target="#таблиця-cards"><span class="toc-section-number">8.2.2</span>  Таблиця <code>cards</code></a></li>
+  <li><a href="#таблиця-products" id="toc-таблиця-products" class="nav-link" data-scroll-target="#таблиця-products"><span class="toc-section-number">8.2.3</span>  Таблиця <code>products</code></a></li>
+  </ul></li>
+  <li><a href="#feature-engeniering" id="toc-feature-engeniering" class="nav-link" data-scroll-target="#feature-engeniering"><span class="toc-section-number">8.3</span>  Feature engeniering</a>
+  <ul class="collapse">
+  <li><a href="#показник-numofproducts" id="toc-показник-numofproducts" class="nav-link" data-scroll-target="#показник-numofproducts"><span class="toc-section-number">8.3.1</span>  Показник <code>NumOfProducts</code></a></li>
+  <li><a href="#показник-hascreditcard" id="toc-показник-hascreditcard" class="nav-link" data-scroll-target="#показник-hascreditcard"><span class="toc-section-number">8.3.2</span>  Показник <code>HasCreditCard</code></a></li>
+  <li><a href="#показник-balance" id="toc-показник-balance" class="nav-link" data-scroll-target="#показник-balance"><span class="toc-section-number">8.3.3</span>  Показник <code>Balance</code></a></li>
+  <li><a href="#нормалізація-даних" id="toc-нормалізація-даних" class="nav-link" data-scroll-target="#нормалізація-даних"><span class="toc-section-number">8.3.4</span>  Нормалізація даних</a></li>
+  </ul></li>
+  <li><a href="#формування-вибірок" id="toc-формування-вибірок" class="nav-link" data-scroll-target="#формування-вибірок"><span class="toc-section-number">8.4</span>  Формування вибірок</a></li>
+  <li><a href="#побудова-deep-learning-моделі" id="toc-побудова-deep-learning-моделі" class="nav-link" data-scroll-target="#побудова-deep-learning-моделі"><span class="toc-section-number">8.5</span>  Побудова Deep Learning моделі</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Нейронні мережі. Deep Learning. Класифікація. Кредитний скоринг</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<p>Курс: “Математичне моделювання в R”</p>
+<hr>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setlocale</span>(<span class="st">"LC_CTYPE"</span>, <span class="st">"ukrainian"</span>) </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">warn =</span> <span class="sc">-</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+'Ukrainian_Ukraine.1251'
+</div>
+</div>
+<section id="набір-даних" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="набір-даних"><span class="header-section-number">8.1</span> Набір даних</h2>
+<p>Джерело: <a href="https://www.kaggle.com/barelydedicated/bank-customer-churn-modeling" class="uri">https://www.kaggle.com/barelydedicated/bank-customer-churn-modeling</a>.</p>
+<p>Завантажимо файли з даними:</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>customers <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/customers.csv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>products <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/products.csv"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>cards <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/cards.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Цей датасет містить такі стовпці:</p>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" checked=""><code>RowNumber</code> - номер рядка.</li>
+<li><input type="checkbox" disabled="" checked=""><code>CustomerId</code> - ідентифікатор клієнта.</li>
+<li><input type="checkbox" disabled="" checked=""><code>Surname</code> - прізвище клієнта.</li>
+<li><input type="checkbox" disabled="" checked=""><code>CreditScore</code> - кредитний рейтинг клієнта.</li>
+<li><input type="checkbox" disabled="" checked=""><code>Geography</code> - регіон.</li>
+<li><input type="checkbox" disabled="" checked=""><code>Gender</code> - стать.</li>
+<li><input type="checkbox" disabled="" checked=""><code>Age</code> - вік.</li>
+<li><input type="checkbox" disabled="" checked=""><code>Tenure</code> - час обслуговування цього клієнта в банку.</li>
+<li><input type="checkbox" disabled="" checked=""><code>IsActiveMember</code> - активний клієнт, виконує операції.</li>
+<li><input type="checkbox" disabled="" checked=""><code>EstimatedSalary</code> - заробітна плата.</li>
+<li><input type="checkbox" disabled="" checked=""><code>Exited</code> - залишив/не залишив банк.</li>
+</ul>
+<p>Інформація про клієнтів:</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(customers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   10000 obs. of  11 variables:
+ $ RowNumber      : int  1 2 3 4 5 6 7 8 9 10 ...
+ $ CustomerId     : int  15634602 15647311 15619304 15701354 15737888 15574012 15592531 15656148 15792365 15592389 ...
+ $ Surname        : chr  "Hargrave" "Hill" "Onio" "Boni" ...
+ $ CreditScore    : int  619 608 502 699 850 645 822 376 501 684 ...
+ $ Geography      : chr  "France" "Spain" "France" "France" ...
+ $ Gender         : chr  "Female" "Female" "Female" "Female" ...
+ $ Age            : int  42 41 42 39 43 44 50 29 44 27 ...
+ $ Tenure         : int  2 1 8 1 2 8 7 4 4 2 ...
+ $ IsActiveMember : int  1 1 0 0 1 0 1 0 1 1 ...
+ $ EstimatedSalary: num  101349 112543 113932 93827 79084 ...
+ $ Exited         : int  1 0 1 0 0 1 0 1 0 0 ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(customers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 6 × 11</caption>
+<thead>
+    <tr><th></th><th scope="col">RowNumber</th><th scope="col">CustomerId</th><th scope="col">Surname</th><th scope="col">CreditScore</th><th scope="col">Geography</th><th scope="col">Gender</th><th scope="col">Age</th><th scope="col">Tenure</th><th scope="col">IsActiveMember</th><th scope="col">EstimatedSalary</th><th scope="col">Exited</th></tr>
+    <tr><th></th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>1</td><td>15634602</td><td>Hargrave</td><td>619</td><td>France</td><td>Female</td><td>42</td><td>2</td><td>1</td><td>101348.88</td><td>1</td></tr>
+    <tr><th scope="row">2</th><td>2</td><td>15647311</td><td>Hill    </td><td>608</td><td>Spain </td><td>Female</td><td>41</td><td>1</td><td>1</td><td>112542.58</td><td>0</td></tr>
+    <tr><th scope="row">3</th><td>3</td><td>15619304</td><td>Onio    </td><td>502</td><td>France</td><td>Female</td><td>42</td><td>8</td><td>0</td><td>113931.57</td><td>1</td></tr>
+    <tr><th scope="row">4</th><td>4</td><td>15701354</td><td>Boni    </td><td>699</td><td>France</td><td>Female</td><td>39</td><td>1</td><td>0</td><td> 93826.63</td><td>0</td></tr>
+    <tr><th scope="row">5</th><td>5</td><td>15737888</td><td>Mitchell</td><td>850</td><td>Spain </td><td>Female</td><td>43</td><td>2</td><td>1</td><td> 79084.10</td><td>0</td></tr>
+    <tr><th scope="row">6</th><td>6</td><td>15574012</td><td>Chu     </td><td>645</td><td>Spain </td><td>Male  </td><td>44</td><td>8</td><td>0</td><td>149756.71</td><td>1</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="оглядовий-аналіз-даних" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="оглядовий-аналіз-даних"><span class="header-section-number">8.2</span> Оглядовий аналіз даних</h2>
+<section id="таблиця-customers" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" class="anchored" data-anchor-id="таблиця-customers"><span class="header-section-number">8.2.1</span> Таблиця <code>customers</code></h3>
+<p>Оглянемо дані колекції <code>customers</code> візуально та за допомогою крос-таблиць:</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gmodels)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Кредитний рейтинг (<code>CreditScore</code>):</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(customers, <span class="fu">aes</span>(<span class="at">x=</span>CreditScore, <span class="at">fill=</span><span class="fu">factor</span>(Exited))) <span class="sc">+</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">10</span>, <span class="at">alpha=</span><span class="fl">0.7</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="037-supervised-learning-neural-network-classification_files/figure-html/cell-7-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Регіон/країна (<code>Geography</code>):</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(customers, <span class="fu">aes</span>(<span class="at">x=</span>Geography, <span class="at">fill=</span><span class="fu">factor</span>(Exited))) <span class="sc">+</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="037-supervised-learning-neural-network-classification_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(customers<span class="sc">$</span>Geography, customers<span class="sc">$</span>Exited)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 
+   Cell Contents
+|-------------------------|
+|                       N |
+| Chi-square contribution |
+|           N / Row Total |
+|           N / Col Total |
+|         N / Table Total |
+|-------------------------|
+
+ 
+Total Observations in Table:  10000 
+
+ 
+                    | customers$Exited 
+customers$Geography |         0 |         1 | Row Total | 
+--------------------|-----------|-----------|-----------|
+             France |      4204 |       810 |      5014 | 
+                    |    11.188 |    43.736 |           | 
+                    |     0.838 |     0.162 |     0.501 | 
+                    |     0.528 |     0.398 |           | 
+                    |     0.420 |     0.081 |           | 
+--------------------|-----------|-----------|-----------|
+            Germany |      1695 |       814 |      2509 | 
+                    |    45.927 |   179.537 |           | 
+                    |     0.676 |     0.324 |     0.251 | 
+                    |     0.213 |     0.400 |           | 
+                    |     0.170 |     0.081 |           | 
+--------------------|-----------|-----------|-----------|
+              Spain |      2064 |       413 |      2477 | 
+                    |     4.251 |    16.617 |           | 
+                    |     0.833 |     0.167 |     0.248 | 
+                    |     0.259 |     0.203 |           | 
+                    |     0.206 |     0.041 |           | 
+--------------------|-----------|-----------|-----------|
+       Column Total |      7963 |      2037 |     10000 | 
+                    |     0.796 |     0.204 |           | 
+--------------------|-----------|-----------|-----------|
+
+ </code></pre>
+</div>
+</div>
+<p>Стать (<code>Gender</code>):</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(customers, <span class="fu">aes</span>(<span class="at">x=</span>Gender, <span class="at">fill=</span><span class="fu">factor</span>(Exited))) <span class="sc">+</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="037-supervised-learning-neural-network-classification_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(customers<span class="sc">$</span>Gender, customers<span class="sc">$</span>Exited)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 
+   Cell Contents
+|-------------------------|
+|                       N |
+| Chi-square contribution |
+|           N / Row Total |
+|           N / Col Total |
+|         N / Table Total |
+|-------------------------|
+
+ 
+Total Observations in Table:  10000 
+
+ 
+                 | customers$Exited 
+customers$Gender |         0 |         1 | Row Total | 
+-----------------|-----------|-----------|-----------|
+          Female |      3404 |      1139 |      4543 | 
+                 |    12.611 |    49.298 |           | 
+                 |     0.749 |     0.251 |     0.454 | 
+                 |     0.427 |     0.559 |           | 
+                 |     0.340 |     0.114 |           | 
+-----------------|-----------|-----------|-----------|
+            Male |      4559 |       898 |      5457 | 
+                 |    10.499 |    41.041 |           | 
+                 |     0.835 |     0.165 |     0.546 | 
+                 |     0.573 |     0.441 |           | 
+                 |     0.456 |     0.090 |           | 
+-----------------|-----------|-----------|-----------|
+    Column Total |      7963 |      2037 |     10000 | 
+                 |     0.796 |     0.204 |           | 
+-----------------|-----------|-----------|-----------|
+
+ </code></pre>
+</div>
+</div>
+<p>Вік (<code>Age</code>):</p>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(customers, <span class="fu">aes</span>(<span class="at">x=</span>Age, <span class="at">fill=</span><span class="fu">factor</span>(Exited))) <span class="sc">+</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">alpha=</span><span class="fl">0.7</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="037-supervised-learning-neural-network-classification_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Час обслуговування клієнта (<code>Tenure</code>):</p>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(customers, <span class="fu">aes</span>(<span class="at">x=</span>Tenure, <span class="at">fill=</span><span class="fu">factor</span>(Exited))) <span class="sc">+</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">alpha=</span><span class="fl">0.7</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="037-supervised-learning-neural-network-classification_files/figure-html/cell-13-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Активність (<code>IsActiveMember</code>):</p>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(customers<span class="sc">$</span>IsActiveMember, customers<span class="sc">$</span>Exited)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 
+   Cell Contents
+|-------------------------|
+|                       N |
+| Chi-square contribution |
+|           N / Row Total |
+|           N / Col Total |
+|         N / Table Total |
+|-------------------------|
+
+ 
+Total Observations in Table:  10000 
+
+ 
+                         | customers$Exited 
+customers$IsActiveMember |         0 |         1 | Row Total | 
+-------------------------|-----------|-----------|-----------|
+                       0 |      3547 |      1302 |      4849 | 
+                         |    25.577 |    99.984 |           | 
+                         |     0.731 |     0.269 |     0.485 | 
+                         |     0.445 |     0.639 |           | 
+                         |     0.355 |     0.130 |           | 
+-------------------------|-----------|-----------|-----------|
+                       1 |      4416 |       735 |      5151 | 
+                         |    24.077 |    94.122 |           | 
+                         |     0.857 |     0.143 |     0.515 | 
+                         |     0.555 |     0.361 |           | 
+                         |     0.442 |     0.073 |           | 
+-------------------------|-----------|-----------|-----------|
+            Column Total |      7963 |      2037 |     10000 | 
+                         |     0.796 |     0.204 |           | 
+-------------------------|-----------|-----------|-----------|
+
+ </code></pre>
+</div>
+</div>
+<p>Заробітна плата (<code>EstimatedSalary</code>):</p>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(customers, <span class="fu">aes</span>(<span class="at">x=</span>EstimatedSalary, <span class="at">fill=</span><span class="fu">factor</span>(Exited))) <span class="sc">+</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1000</span>, <span class="at">alpha=</span><span class="fl">0.7</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="037-supervised-learning-neural-network-classification_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p><code>Exited</code>:</p>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(customers<span class="sc">$</span>Exited)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 
+   Cell Contents
+|-------------------------|
+|                       N |
+|         N / Table Total |
+|-------------------------|
+
+ 
+Total Observations in Table:  10000 
+
+ 
+          |         0 |         1 | 
+          |-----------|-----------|
+          |      7963 |      2037 | 
+          |     0.796 |     0.204 | 
+          |-----------|-----------|
+
+
+
+ </code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="таблиця-cards" class="level3" data-number="8.2.2">
+<h3 data-number="8.2.2" class="anchored" data-anchor-id="таблиця-cards"><span class="header-section-number">8.2.2</span> Таблиця <code>cards</code></h3>
+<p>Інформація про карти клієнта:</p>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(cards)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   13545 obs. of  4 variables:
+ $ CustomerId  : int  15634602 15647311 15647311 15619304 15619304 15701354 15701354 15737888 15737888 15574012 ...
+ $ CardNo      : int  684618 357092 802678 888594 987103 507476 928960 370210 935036 581042 ...
+ $ IsCreditCard: int  1 0 0 1 0 0 0 1 0 1 ...
+ $ Balance     : num  5 41922 41913 79846 79859 ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cards)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 6 × 4</caption>
+<thead>
+    <tr><th></th><th scope="col">CustomerId</th><th scope="col">CardNo</th><th scope="col">IsCreditCard</th><th scope="col">Balance</th></tr>
+    <tr><th></th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>15634602</td><td>684618</td><td>1</td><td>    5.00</td></tr>
+    <tr><th scope="row">2</th><td>15647311</td><td>357092</td><td>0</td><td>41921.93</td></tr>
+    <tr><th scope="row">3</th><td>15647311</td><td>802678</td><td>0</td><td>41912.93</td></tr>
+    <tr><th scope="row">4</th><td>15619304</td><td>888594</td><td>1</td><td>79846.40</td></tr>
+    <tr><th scope="row">5</th><td>15619304</td><td>987103</td><td>0</td><td>79859.40</td></tr>
+    <tr><th scope="row">6</th><td>15701354</td><td>507476</td><td>0</td><td>   28.00</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(cards)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>   CustomerId           CardNo        IsCreditCard       Balance      
+ Min.   :15565701   Min.   :100231   Min.   :0.0000   Min.   :     0  
+ 1st Qu.:15628272   1st Qu.:323587   1st Qu.:0.0000   1st Qu.:    24  
+ Median :15691011   Median :545073   Median :0.0000   Median : 52991  
+ Mean   :15690848   Mean   :548414   Mean   :0.4688   Mean   : 51096  
+ 3rd Qu.:15752816   3rd Qu.:774943   3rd Qu.:1.0000   3rd Qu.: 77276  
+ Max.   :15815690   Max.   :999985   Max.   :1.0000   Max.   :221549  </code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="таблиця-products" class="level3" data-number="8.2.3">
+<h3 data-number="8.2.3" class="anchored" data-anchor-id="таблиця-products"><span class="header-section-number">8.2.3</span> Таблиця <code>products</code></h3>
+<p>Інформація про продукти клієнта:</p>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(products)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   13862 obs. of  2 variables:
+ $ CustomerId : int  15634602 15647311 15619304 15619304 15619304 15701354 15701354 15737888 15574012 15574012 ...
+ $ ProductName: chr  "PROD_1" "PROD_1" "PROD_1" "PROD_2" ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(products)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 6 × 2</caption>
+<thead>
+    <tr><th></th><th scope="col">CustomerId</th><th scope="col">ProductName</th></tr>
+    <tr><th></th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;chr&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>15634602</td><td>PROD_1</td></tr>
+    <tr><th scope="row">2</th><td>15647311</td><td>PROD_1</td></tr>
+    <tr><th scope="row">3</th><td>15619304</td><td>PROD_1</td></tr>
+    <tr><th scope="row">4</th><td>15619304</td><td>PROD_2</td></tr>
+    <tr><th scope="row">5</th><td>15619304</td><td>PROD_3</td></tr>
+    <tr><th scope="row">6</th><td>15701354</td><td>PROD_1</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="feature-engeniering" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="feature-engeniering"><span class="header-section-number">8.3</span> Feature engeniering</h2>
+<p>Сформуємо додаткові змінні на основі наявних даних:</p>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" checked=""><code>Balance</code> - сума по усіх картах клієнат.</li>
+<li><input type="checkbox" disabled="" checked=""><code>NumOfProducts</code> - кількість продуктів банку, які використовує клієнт.</li>
+<li><input type="checkbox" disabled="" checked=""><code>HasCreditCard</code> - dummy-змінна, наявність кредитної карти у клієнта.</li>
+</ul>
+<section id="показник-numofproducts" class="level3" data-number="8.3.1">
+<h3 data-number="8.3.1" class="anchored" data-anchor-id="показник-numofproducts"><span class="header-section-number">8.3.1</span> Показник <code>NumOfProducts</code></h3>
+<p>Варто звернути увагу, що генерувати нові фічі можна із використанням можлиовстей агрегації та фільтрування даних (наприклад, методи пакету <code>dplyr</code>) або за допомогою простих алгоритмічних структур (цикли, розгалуження).</p>
+<p>Для <code>R</code> використання циклів для подібних задач є не досить хорошим рішенням, адже код виглядає складно і виконується повільно. Проте ми напишемо для требування і пояснення приклади з використанням обох підходів.</p>
+<p>Імперативний підхід до програмування:</p>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Створюємо пусту змінну</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>customers<span class="sc">$</span>NumOfProducts <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(customers))</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  id <span class="ot">&lt;-</span> customers<span class="sc">$</span>CustomerId[i]</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  prods <span class="ot">&lt;-</span> <span class="fu">subset</span>(products, CustomerId <span class="sc">==</span> id)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  customers<span class="sc">$</span>NumOfProducts[i] <span class="ot">&lt;-</span> <span class="fu">nrow</span>(prods)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(customers, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 4 × 12</caption>
+<thead>
+    <tr><th></th><th scope="col">RowNumber</th><th scope="col">CustomerId</th><th scope="col">Surname</th><th scope="col">CreditScore</th><th scope="col">Geography</th><th scope="col">Gender</th><th scope="col">Age</th><th scope="col">Tenure</th><th scope="col">IsActiveMember</th><th scope="col">EstimatedSalary</th><th scope="col">Exited</th><th scope="col">NumOfProducts</th></tr>
+    <tr><th></th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>1</td><td>15634602</td><td>Hargrave</td><td>619</td><td>France</td><td>Female</td><td>42</td><td>2</td><td>1</td><td>101348.88</td><td>1</td><td>1</td></tr>
+    <tr><th scope="row">2</th><td>2</td><td>15647311</td><td>Hill    </td><td>608</td><td>Spain </td><td>Female</td><td>41</td><td>1</td><td>1</td><td>112542.58</td><td>0</td><td>1</td></tr>
+    <tr><th scope="row">3</th><td>3</td><td>15619304</td><td>Onio    </td><td>502</td><td>France</td><td>Female</td><td>42</td><td>8</td><td>0</td><td>113931.57</td><td>1</td><td>3</td></tr>
+    <tr><th scope="row">4</th><td>4</td><td>15701354</td><td>Boni    </td><td>699</td><td>France</td><td>Female</td><td>39</td><td>1</td><td>0</td><td> 93826.63</td><td>0</td><td>2</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Декларативний приклад коду:</p>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(dplyr))</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>customers_tmp <span class="ot">&lt;-</span> customers <span class="sc">|&gt;</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(products <span class="sc">|&gt;</span> </span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">group_by</span>(CustomerId) <span class="sc">|&gt;</span> </span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>              <span class="fu">mutate</span>(<span class="at">NumOfProducts =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>              <span class="fu">select</span>(CustomerId, NumOfProducts) <span class="sc">|&gt;</span> <span class="fu">distinct</span>(), <span class="at">by =</span> <span class="st">"CustomerId"</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(customers_tmp, <span class="dv">4</span>)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="co"># P.S. Це набагато швидше</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 4 × 13</caption>
+<thead>
+    <tr><th></th><th scope="col">RowNumber</th><th scope="col">CustomerId</th><th scope="col">Surname</th><th scope="col">CreditScore</th><th scope="col">Geography</th><th scope="col">Gender</th><th scope="col">Age</th><th scope="col">Tenure</th><th scope="col">IsActiveMember</th><th scope="col">EstimatedSalary</th><th scope="col">Exited</th><th scope="col">NumOfProducts.x</th><th scope="col">NumOfProducts.y</th></tr>
+    <tr><th></th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>1</td><td>15634602</td><td>Hargrave</td><td>619</td><td>France</td><td>Female</td><td>42</td><td>2</td><td>1</td><td>101348.88</td><td>1</td><td>1</td><td>1</td></tr>
+    <tr><th scope="row">2</th><td>2</td><td>15647311</td><td>Hill    </td><td>608</td><td>Spain </td><td>Female</td><td>41</td><td>1</td><td>1</td><td>112542.58</td><td>0</td><td>1</td><td>1</td></tr>
+    <tr><th scope="row">3</th><td>3</td><td>15619304</td><td>Onio    </td><td>502</td><td>France</td><td>Female</td><td>42</td><td>8</td><td>0</td><td>113931.57</td><td>1</td><td>3</td><td>3</td></tr>
+    <tr><th scope="row">4</th><td>4</td><td>15701354</td><td>Boni    </td><td>699</td><td>France</td><td>Female</td><td>39</td><td>1</td><td>0</td><td> 93826.63</td><td>0</td><td>2</td><td>2</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+<section id="показник-hascreditcard" class="level3" data-number="8.3.2">
+<h3 data-number="8.3.2" class="anchored" data-anchor-id="показник-hascreditcard"><span class="header-section-number">8.3.2</span> Показник <code>HasCreditCard</code></h3>
+<div class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>customers <span class="ot">&lt;-</span> customers <span class="sc">|&gt;</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(cards <span class="sc">|&gt;</span> </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>              <span class="fu">group_by</span>(CustomerId) <span class="sc">|&gt;</span> </span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>              <span class="fu">summarise</span>(<span class="at">HasCreditCard =</span> <span class="fu">ifelse</span>(<span class="fu">sum</span>(IsCreditCard) <span class="sc">==</span> <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">select</span>(CustomerId, HasCreditCard) <span class="sc">|&gt;</span> <span class="fu">distinct</span>(), <span class="at">by =</span> <span class="st">"CustomerId"</span>)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(customers, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 4 × 13</caption>
+<thead>
+    <tr><th></th><th scope="col">RowNumber</th><th scope="col">CustomerId</th><th scope="col">Surname</th><th scope="col">CreditScore</th><th scope="col">Geography</th><th scope="col">Gender</th><th scope="col">Age</th><th scope="col">Tenure</th><th scope="col">IsActiveMember</th><th scope="col">EstimatedSalary</th><th scope="col">Exited</th><th scope="col">NumOfProducts</th><th scope="col">HasCreditCard</th></tr>
+    <tr><th></th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>1</td><td>15634602</td><td>Hargrave</td><td>619</td><td>France</td><td>Female</td><td>42</td><td>2</td><td>1</td><td>101348.88</td><td>1</td><td>1</td><td>1</td></tr>
+    <tr><th scope="row">2</th><td>2</td><td>15647311</td><td>Hill    </td><td>608</td><td>Spain </td><td>Female</td><td>41</td><td>1</td><td>1</td><td>112542.58</td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><th scope="row">3</th><td>3</td><td>15619304</td><td>Onio    </td><td>502</td><td>France</td><td>Female</td><td>42</td><td>8</td><td>0</td><td>113931.57</td><td>1</td><td>3</td><td>1</td></tr>
+    <tr><th scope="row">4</th><td>4</td><td>15701354</td><td>Boni    </td><td>699</td><td>France</td><td>Female</td><td>39</td><td>1</td><td>0</td><td> 93826.63</td><td>0</td><td>2</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+<section id="показник-balance" class="level3" data-number="8.3.3">
+<h3 data-number="8.3.3" class="anchored" data-anchor-id="показник-balance"><span class="header-section-number">8.3.3</span> Показник <code>Balance</code></h3>
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>customers <span class="ot">&lt;-</span> customers <span class="sc">|&gt;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(cards <span class="sc">|&gt;</span> </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>              <span class="fu">group_by</span>(CustomerId) <span class="sc">|&gt;</span> </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>              <span class="fu">mutate</span>(<span class="at">Balance =</span> <span class="fu">round</span>(<span class="fu">sum</span>(Balance))) <span class="sc">|&gt;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">select</span>(CustomerId, Balance) <span class="sc">|&gt;</span> <span class="fu">distinct</span>(), <span class="at">by =</span> <span class="st">"CustomerId"</span>)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(customers, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 4 × 14</caption>
+<thead>
+    <tr><th></th><th scope="col">RowNumber</th><th scope="col">CustomerId</th><th scope="col">Surname</th><th scope="col">CreditScore</th><th scope="col">Geography</th><th scope="col">Gender</th><th scope="col">Age</th><th scope="col">Tenure</th><th scope="col">IsActiveMember</th><th scope="col">EstimatedSalary</th><th scope="col">Exited</th><th scope="col">NumOfProducts</th><th scope="col">HasCreditCard</th><th scope="col">Balance</th></tr>
+    <tr><th></th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>1</td><td>15634602</td><td>Hargrave</td><td>619</td><td>France</td><td>Female</td><td>42</td><td>2</td><td>1</td><td>101348.88</td><td>1</td><td>1</td><td>1</td><td>     5</td></tr>
+    <tr><th scope="row">2</th><td>2</td><td>15647311</td><td>Hill    </td><td>608</td><td>Spain </td><td>Female</td><td>41</td><td>1</td><td>1</td><td>112542.58</td><td>0</td><td>1</td><td>0</td><td> 83835</td></tr>
+    <tr><th scope="row">3</th><td>3</td><td>15619304</td><td>Onio    </td><td>502</td><td>France</td><td>Female</td><td>42</td><td>8</td><td>0</td><td>113931.57</td><td>1</td><td>3</td><td>1</td><td>159706</td></tr>
+    <tr><th scope="row">4</th><td>4</td><td>15701354</td><td>Boni    </td><td>699</td><td>France</td><td>Female</td><td>39</td><td>1</td><td>0</td><td> 93826.63</td><td>0</td><td>2</td><td>0</td><td>    47</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Звичано код можна поєднати в 1 запит.</p>
+</section>
+<section id="нормалізація-даних" class="level3" data-number="8.3.4">
+<h3 data-number="8.3.4" class="anchored" data-anchor-id="нормалізація-даних"><span class="header-section-number">8.3.4</span> Нормалізація даних</h3>
+<p>Видалимо зайві покзники, що заважатимуть будувати моделі:</p>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>customers <span class="ot">&lt;-</span> customers <span class="sc">|&gt;</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(RowNumber, CustomerId, Surname))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Варто звернути увагу, що інженереія нових фіч завершена не до кінця і у нас ще присутні параметри, що мають нечислові значення <code>Geography</code> + <code>Gender</code>. Спробуйте замінити їх, наприклад, на <code>dummy</code>-змінні або використати <code>бінінг</code>.</p>
+<p>Для скорочення часу на вивчення матеріали ми скористаємося звичайним приведенням даних до числового типу:</p>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>customers<span class="sc">$</span>Geography <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.factor</span>(customers<span class="sc">$</span>Geography))</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>customers<span class="sc">$</span>Gender <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.factor</span>(customers<span class="sc">$</span>Gender))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(customers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   10000 obs. of  11 variables:
+ $ CreditScore    : int  619 608 502 699 850 645 822 376 501 684 ...
+ $ Geography      : num  1 3 1 1 3 3 1 2 1 1 ...
+ $ Gender         : num  1 1 1 1 1 2 2 1 2 2 ...
+ $ Age            : int  42 41 42 39 43 44 50 29 44 27 ...
+ $ Tenure         : int  2 1 8 1 2 8 7 4 4 2 ...
+ $ IsActiveMember : int  1 1 0 0 1 0 1 0 1 1 ...
+ $ EstimatedSalary: num  101349 112543 113932 93827 79084 ...
+ $ Exited         : int  1 0 1 0 0 1 0 1 0 0 ...
+ $ NumOfProducts  : num  1 1 3 2 1 2 2 4 2 1 ...
+ $ HasCreditCard  : num  1 0 1 0 1 1 1 1 0 1 ...
+ $ Balance        : num  5 83835 159706 47 125571 ...</code></pre>
+</div>
+</div>
+<p>Використовуючи функцію <code>scale()</code> нормалізуємо дані:</p>
+<div class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>scaled <span class="ot">&lt;-</span> <span class="fu">scale</span>(customers[<span class="sc">-</span><span class="dv">8</span>], <span class="at">center =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>scaled <span class="ot">&lt;-</span> <span class="fu">cbind</span>(scaled, customers[<span class="dv">8</span>])</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(scaled,)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 6 × 11</caption>
+<thead>
+    <tr><th></th><th scope="col">CreditScore</th><th scope="col">Geography</th><th scope="col">Gender</th><th scope="col">Age</th><th scope="col">Tenure</th><th scope="col">IsActiveMember</th><th scope="col">EstimatedSalary</th><th scope="col">NumOfProducts</th><th scope="col">HasCreditCard</th><th scope="col">Balance</th><th scope="col">Exited</th></tr>
+    <tr><th></th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>-0.32620511</td><td>-0.9018411</td><td>-1.0959327</td><td>0.293502747</td><td>-1.041708</td><td> 0.970194</td><td> 0.0218854</td><td>-0.5420116</td><td> 0.6521559</td><td>-1.2240103</td><td>1</td></tr>
+    <tr><th scope="row">2</th><td>-0.44001395</td><td> 1.5149916</td><td>-1.0959327</td><td>0.198153924</td><td>-1.387468</td><td> 0.970194</td><td> 0.2165229</td><td>-0.5420116</td><td>-1.5332062</td><td> 0.1179507</td><td>0</td></tr>
+    <tr><th scope="row">3</th><td>-1.53671734</td><td>-0.9018411</td><td>-1.0959327</td><td>0.293502747</td><td> 1.032856</td><td>-1.030619</td><td> 0.2406749</td><td> 2.2648841</td><td> 0.6521559</td><td> 1.3325030</td><td>1</td></tr>
+    <tr><th scope="row">4</th><td> 0.50149556</td><td>-0.9018411</td><td>-1.0959327</td><td>0.007456278</td><td>-1.387468</td><td>-1.030619</td><td>-0.1089125</td><td> 0.8614363</td><td>-1.5332062</td><td>-1.2233380</td><td>0</td></tr>
+    <tr><th scope="row">5</th><td> 2.06378057</td><td> 1.5149916</td><td>-1.0959327</td><td>0.388851570</td><td>-1.041708</td><td> 0.970194</td><td>-0.3652575</td><td>-0.5420116</td><td> 0.6521559</td><td> 0.7860657</td><td>0</td></tr>
+    <tr><th scope="row">6</th><td>-0.05720239</td><td> 1.5149916</td><td> 0.9123735</td><td>0.484200392</td><td> 1.032856</td><td>-1.030619</td><td> 0.8636071</td><td> 0.8614363</td><td> 0.6521559</td><td> 0.5974260</td><td>1</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="формування-вибірок" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="формування-вибірок"><span class="header-section-number">8.4</span> Формування вибірок</h2>
+<p>Розділимо вибірку на тестову та тренувальну за допомогою пакету <code>caTools</code> та функції <code>sample.split()</code>:</p>
+<div class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caTools)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2022</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>split <span class="ot">&lt;-</span> <span class="fu">sample.split</span>(scaled<span class="sc">$</span>Exited, <span class="at">SplitRatio =</span> <span class="fl">0.7</span>)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> <span class="fu">subset</span>(scaled, split <span class="sc">==</span> <span class="cn">TRUE</span>)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>test_data <span class="ot">&lt;-</span> <span class="fu">subset</span>(scaled, split <span class="sc">==</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+</section>
+<section id="побудова-deep-learning-моделі" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="побудова-deep-learning-моделі"><span class="header-section-number">8.5</span> Побудова Deep Learning моделі</h2>
+<p>Викосритаємо можливості пакету <code>h2o</code> для побудови моделі на основі <code>deep learning</code>. Підключимо пакет.</p>
+<div class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("h2o")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(h2o))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Увага! Для запуску пакету потрібна віртуальна машина <code>Java</code> на ПК (<code>JVM</code>). Завантажити актуальну версію <code>Java</code> можна з сайту <a href="https://www.java.com/en/download/" class="uri">https://www.java.com/en/download/</a>.</p>
+</div>
+</div>
+<p>Запустимо двигун <code>h2o</code>:</p>
+<div class="cell" data-execution_count="32">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Увага, це специфічні налаштуваняя для ПК на якому налагоджувався проєкт</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">JAVA_HOME =</span> <span class="st">"C:/Program Files/Java/jdk-19/"</span>)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">Sys.getenv</span>(<span class="st">"JAVA_HOME"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "C:/Program Files/Java/jdk-19/"</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="33">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">h2o.init</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+H2O is not running yet, starting it now...
+
+Note:  In case of errors look at the following log files:
+    D:\Temp\RtmpWcfQIa\file86d022e97546/h2o_yura_started_from_r.out
+    D:\Temp\RtmpWcfQIa\file86d01affe0a/h2o_yura_started_from_r.err
+
+
+Starting H2O JVM and connecting: . Connection successful!
+
+R is connected to the H2O cluster: 
+    H2O cluster uptime:         4 seconds 650 milliseconds 
+    H2O cluster timezone:       Europe/Kiev 
+    H2O data parsing timezone:  UTC 
+    H2O cluster version:        3.38.0.1 
+    H2O cluster version age:    14 days, 4 hours and 46 minutes  
+    H2O cluster name:           H2O_started_from_R_yura_svm422 
+    H2O cluster total nodes:    1 
+    H2O cluster total memory:   3.95 GB 
+    H2O cluster total cores:    8 
+    H2O cluster allowed cores:  8 
+    H2O cluster healthy:        TRUE 
+    H2O Connection ip:          localhost 
+    H2O Connection port:        54321 
+    H2O Connection proxy:       NA 
+    H2O Internal Security:      FALSE 
+    R Version:                  R version 4.1.3 (2022-03-10) 
+</code></pre>
+</div>
+</div>
+<p>Побудуємо математичну модель:</p>
+<div class="cell" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>h2o_model <span class="ot">&lt;-</span> <span class="fu">h2o.deeplearning</span>(<span class="at">y =</span> <span class="st">'Exited'</span>, </span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">training_frame =</span> <span class="fu">as.h2o</span>(train_data),</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>                              <span class="at">activation =</span> <span class="st">"Rectifier"</span>,</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>                              <span class="at">hidden =</span> <span class="fu">c</span>(<span class="dv">6</span>,<span class="dv">6</span>),</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>                              <span class="at">epochs =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  |======================================================================| 100%
+  |======================================================================| 100%</code></pre>
+</div>
+</div>
+<p>Варто перегляднути набір параметрів, що може приймати функція <code>h2o.deeplearning()</code>, адже вона досить складна:</p>
+<div class="cell" data-execution_count="35">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># help(h2o.deeplearning) # можна переглянути параметри методу</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Здійснимо прогноз на тестовій вибірці (<code>h2o.predict()</code>), а також класифікуємо значення за <code>cutOff = 0.5</code>:</p>
+<div class="cell" data-execution_count="36">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>h2o_predict_prob <span class="ot">&lt;-</span> <span class="fu">h2o.predict</span>(h2o_model, <span class="at">newdata =</span> <span class="fu">as.h2o</span>(test_data[<span class="sc">-</span>(<span class="fu">ncol</span>(test_data))]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  |======================================================================| 100%
+  |======================================================================| 100%</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="37">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>h2o_predict_class <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(h2o_predict_prob <span class="sc">&gt;</span> <span class="fl">0.5</span>, <span class="dv">1</span> , <span class="dv">0</span>)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>h2o_predict_class <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(h2o_predict_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Побудуємо матрицю Confusion Matrix:</p>
+<div class="cell" data-execution_count="38">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(caret))</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(<span class="fu">factor</span>(test_data<span class="sc">$</span>Exited), <span class="fu">factor</span>(h2o_predict_class), <span class="at">positive =</span> <span class="st">"1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction    0    1
+         0 2285  104
+         1  343  268
+                                          
+               Accuracy : 0.851           
+                 95% CI : (0.8377, 0.8636)
+    No Information Rate : 0.876           
+    P-Value [Acc &gt; NIR] : 1               
+                                          
+                  Kappa : 0.4624          
+                                          
+ Mcnemar's Test P-Value : &lt;2e-16          
+                                          
+            Sensitivity : 0.72043         
+            Specificity : 0.86948         
+         Pos Pred Value : 0.43863         
+         Neg Pred Value : 0.95647         
+             Prevalence : 0.12400         
+         Detection Rate : 0.08933         
+   Detection Prevalence : 0.20367         
+      Balanced Accuracy : 0.79496         
+                                          
+       'Positive' Class : 1               
+                                          </code></pre>
+</div>
+</div>
+<p>Побудуємо <code>ROC</code>-криву:</p>
+<div class="cell" data-execution_count="39">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(InformationValue)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>InformationValue<span class="sc">::</span><span class="fu">plotROC</span>(test_data<span class="sc">$</span>Exited, <span class="fu">as.vector</span>(h2o_predict_prob))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'InformationValue'
+
+
+The following objects are masked from 'package:caret':
+
+    confusionMatrix, precision, sensitivity, specificity
+
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="037-supervised-learning-neural-network-classification_files/figure-html/cell-40-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Побудуємо модель з більшою кількістю прихованих шарів та нейронів:</p>
+<div class="cell" data-execution_count="40">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>h2o_model2 <span class="ot">&lt;-</span> <span class="fu">h2o.deeplearning</span>(<span class="at">y =</span> <span class="st">'Exited'</span>, </span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">training_frame =</span> <span class="fu">as.h2o</span>(train_data),</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>                              <span class="at">activation =</span> <span class="st">"Rectifier"</span>,</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>                              <span class="at">hidden =</span> <span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">10</span>),</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>                              <span class="at">epochs =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  |======================================================================| 100%
+  |======================================================================| 100%</code></pre>
+</div>
+</div>
+<p>Здійснимо прогноз:</p>
+<div class="cell" data-execution_count="41">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>h2o_predict_prob2 <span class="ot">&lt;-</span> <span class="fu">h2o.predict</span>(h2o_model2, <span class="at">newdata =</span> <span class="fu">as.h2o</span>(test_data[<span class="sc">-</span>(<span class="fu">ncol</span>(test_data))]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  |======================================================================| 100%
+  |======================================================================| 100%</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="42">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>h2o_predict_class2 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(h2o_predict_prob2 <span class="sc">&gt;</span> <span class="fl">0.5</span>, <span class="dv">1</span> , <span class="dv">0</span>)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>h2o_predict_class2 <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(h2o_predict_class2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Confiusion Matrix:</p>
+<div class="cell" data-execution_count="43">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(<span class="fu">factor</span>(test_data<span class="sc">$</span>Exited), <span class="fu">factor</span>(h2o_predict_class2), <span class="at">positive =</span> <span class="st">"1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction    0    1
+         0 2302   87
+         1  343  268
+                                         
+               Accuracy : 0.8567         
+                 95% CI : (0.8436, 0.869)
+    No Information Rate : 0.8817         
+    P-Value [Acc &gt; NIR] : 1              
+                                         
+                  Kappa : 0.4765         
+                                         
+ Mcnemar's Test P-Value : &lt;2e-16         
+                                         
+            Sensitivity : 0.75493        
+            Specificity : 0.87032        
+         Pos Pred Value : 0.43863        
+         Neg Pred Value : 0.96358        
+             Prevalence : 0.11833        
+         Detection Rate : 0.08933        
+   Detection Prevalence : 0.20367        
+      Balanced Accuracy : 0.81263        
+                                         
+       'Positive' Class : 1              
+                                         </code></pre>
+</div>
+</div>
+<p><code>ROC</code>-крива:</p>
+<div class="cell" data-execution_count="44">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>InformationValue<span class="sc">::</span><span class="fu">plotROC</span>(test_data<span class="sc">$</span>Exited, <span class="fu">as.vector</span>(h2o_predict_prob2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="037-supervised-learning-neural-network-classification_files/figure-html/cell-45-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Зупинимо двигун <code>h2o</code>:</p>
+<div class="cell" data-execution_count="45">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">h2o.shutdown</span>(<span class="at">prompt =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./036-supervised-learning-desicion-trees-classification.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Дерева рішень. Класифікація. Депозити</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+      <div class="nav-footer-center">Copyright 2022, Юрій Клебан</div>
+  </div>
+</footer>
+
+
+
+</body></html>

@@ -1,0 +1,6 @@
+.sidebar-item-section {
+    border-bottom: 1px solid #ccc;
+}
+.sidebar-item-section>.sidebar-item-container {
+    font-weight: 600;
+}

@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.251">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Математичне моделювання в R - 3&nbsp; Лінійна регресія. Прокат велосипедів</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./033-supervised-learning-desicion-trees-regression.html" rel="next">
+<link href="./031-supervised-learning-linear-regression-1.html" rel="prev">
+<link href="./img/favicon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Лінійна регресія. Прокат велосипедів</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Математичне моделювання в R</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/kleban/ml-in-r-book/" title="Source Code" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="" title="Share" id="sidebar-tool-dropdown-0" class="sidebar-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-share"></i></a>
+    <ul class="dropdown-menu" aria-labelledby="sidebar-tool-dropdown-0">
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+            <i class="bi bi-bi-twitter pe-1"></i>
+          Twitter
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=|url|">
+            <i class="bi bi-bi-facebook pe-1"></i>
+          Facebook
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+            <i class="bi bi-bi-linkedin pe-1"></i>
+          LinkedIn
+          </a>
+        </li>
+    </ul>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Про курс</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./010-intro.html" class="sidebar-item-text sidebar-link">ТЕМА 1. ВСТУП ДО КУРСУ</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./020-feature-engeneering.html" class="sidebar-item-text sidebar-link">ТЕМА 2. КОНСТРУЮВАННЯ ОЗНАК</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./023-feature-engeneering-woe-binning.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Woe Binning</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./030-supervised-learning.html" class="sidebar-item-text sidebar-link">ТЕМА 3. НАВЧАННЯ "З УЧИТЕЛЕМ"</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./031-supervised-learning-linear-regression-1.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Лінійна регресія. Престиж професій</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./032-supervised-learning-linear-regression-2.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Лінійна регресія. Прокат велосипедів</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./033-supervised-learning-desicion-trees-regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Дерева рішень. Регресія. Баланс кредитної карти</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./034-supervised-learning-neutal-networks-regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Нейронні мережі. Регресія. Вартість житла</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./035-supervised-learning-logistic-regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Логістична регресія. Класифікація. Титанік</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./036-supervised-learning-desicion-trees-classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Дерева рішень. Класифікація. Депозити</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./037-supervised-learning-neural-network-classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Нейронні мережі. Deep Learning. Класифікація. Кредитний скоринг</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Зміст</h2>
+   
+  <ul>
+  <li><a href="#dataset-overview" id="toc-dataset-overview" class="nav-link active" data-scroll-target="#dataset-overview"><span class="toc-section-number">3.1</span>  Dataset overview</a></li>
+  <li><a href="#minimal-data-preprocessing" id="toc-minimal-data-preprocessing" class="nav-link" data-scroll-target="#minimal-data-preprocessing"><span class="toc-section-number">3.2</span>  Minimal data preprocessing</a></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis"><span class="toc-section-number">3.3</span>  Exploratory data analysis</a></li>
+  <li><a href="#train-test-split" id="toc-train-test-split" class="nav-link" data-scroll-target="#train-test-split"><span class="toc-section-number">3.4</span>  Train test split</a></li>
+  <li><a href="#model-building" id="toc-model-building" class="nav-link" data-scroll-target="#model-building"><span class="toc-section-number">3.5</span>  Model building</a></li>
+  <li><a href="#model-errors-analysis" id="toc-model-errors-analysis" class="nav-link" data-scroll-target="#model-errors-analysis"><span class="toc-section-number">3.6</span>  Model errors analysis</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Лінійна регресія. Прокат велосипедів</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<p>Курс: “Математичне моделювання в R”</p>
+<hr>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Перевірити матеріали лекції!!!
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Розділ про прогноз з кроком 10-30. Втрачено окремі комірки коду.</p>
+</div>
+</div>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("mice")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="dataset-overview" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="dataset-overview"><span class="header-section-number">3.1</span> Dataset overview</h2>
+<p>Source: https://www.kaggle.com/c/bike-sharing-demand/data</p>
+<p><strong>Dataset description:</strong></p>
+<p>You are provided hourly rental data spanning two years. For this competition, the training set is comprised of the first 19 days of each month, while the test set is the 20th to the end of the month. You must predict the total count of bikes rented during each hour covered by the test set, using only information available prior to the rental period.</p>
+<p><strong>Data Fields:</strong></p>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" checked=""><code>datetime</code> - hourly date + timestamp</li>
+<li><input type="checkbox" disabled="" checked=""><code>season</code> -<ul class="task-list">
+<li><input type="checkbox" disabled="" checked="">1 = spring</li>
+<li><input type="checkbox" disabled="" checked="">2 = summer</li>
+<li><input type="checkbox" disabled="" checked="">3 = fall</li>
+<li><input type="checkbox" disabled="" checked="">4 = winter</li>
+</ul></li>
+<li><input type="checkbox" disabled="" checked=""><code>holiday</code> - whether the day is considered a holiday</li>
+<li><input type="checkbox" disabled="" checked=""><code>workingday</code> - whether the day is neither a weekend nor holiday</li>
+<li><input type="checkbox" disabled="" checked=""><code>weather</code><ul class="task-list">
+<li><input type="checkbox" disabled="" checked="">1: Clear, Few clouds, Partly cloudy, Partly cloudy</li>
+<li><input type="checkbox" disabled="" checked="">2: Mist + Cloudy, Mist + Broken clouds, Mist + Few clouds, Mist</li>
+<li><input type="checkbox" disabled="" checked="">3: Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds</li>
+<li><input type="checkbox" disabled="" checked="">4: Heavy Rain + Ice Pallets + Thunderstorm + Mist, Snow + Fog</li>
+</ul></li>
+<li><input type="checkbox" disabled="" checked=""><code>temp</code> - temperature in Celsius</li>
+<li><input type="checkbox" disabled="" checked=""><code>atemp</code> - “feels like” temperature in Celsius</li>
+<li><input type="checkbox" disabled="" checked=""><code>humidity</code> - relative humidity</li>
+<li><input type="checkbox" disabled="" checked=""><code>windspeed</code> - wind speed</li>
+<li><input type="checkbox" disabled="" checked=""><code>casual</code> - number of non-registered user rentals initiated</li>
+<li><input type="checkbox" disabled="" checked=""><code>registered</code> - number of registered user rentals initiated</li>
+<li><input type="checkbox" disabled="" checked=""><code>count</code> - number of total rentals <strong>(It is target variable. We will predict it!)</strong></li>
+</ul>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/bikes.csv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 6 × 12</caption>
+<thead>
+    <tr><th></th><th scope="col">datetime</th><th scope="col">season</th><th scope="col">holiday</th><th scope="col">workingday</th><th scope="col">weather</th><th scope="col">temp</th><th scope="col">atemp</th><th scope="col">humidity</th><th scope="col">windspeed</th><th scope="col">casual</th><th scope="col">registered</th><th scope="col">count</th></tr>
+    <tr><th></th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>2011-01-01 00:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>81</td><td>0.0000</td><td>3</td><td>13</td><td>16</td></tr>
+    <tr><th scope="row">2</th><td>2011-01-01 01:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.02</td><td>13.635</td><td>80</td><td>0.0000</td><td>8</td><td>32</td><td>40</td></tr>
+    <tr><th scope="row">3</th><td>2011-01-01 02:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.02</td><td>13.635</td><td>80</td><td>0.0000</td><td>5</td><td>27</td><td>32</td></tr>
+    <tr><th scope="row">4</th><td>2011-01-01 03:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>75</td><td>0.0000</td><td>3</td><td>10</td><td>13</td></tr>
+    <tr><th scope="row">5</th><td>2011-01-01 04:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>75</td><td>0.0000</td><td>0</td><td> 1</td><td> 1</td></tr>
+    <tr><th scope="row">6</th><td>2011-01-01 05:00:00</td><td>1</td><td>0</td><td>0</td><td>2</td><td>9.84</td><td>12.880</td><td>75</td><td>6.0032</td><td>0</td><td> 1</td><td> 1</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Описова статистика факторів:</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>   datetime             season         holiday          workingday    
+ Length:10886       Min.   :1.000   Min.   :0.00000   Min.   :0.0000  
+ Class :character   1st Qu.:2.000   1st Qu.:0.00000   1st Qu.:0.0000  
+ Mode  :character   Median :3.000   Median :0.00000   Median :1.0000  
+                    Mean   :2.507   Mean   :0.02857   Mean   :0.6809  
+                    3rd Qu.:4.000   3rd Qu.:0.00000   3rd Qu.:1.0000  
+                    Max.   :4.000   Max.   :1.00000   Max.   :1.0000  
+    weather           temp           atemp          humidity     
+ Min.   :1.000   Min.   : 0.82   Min.   : 0.76   Min.   :  0.00  
+ 1st Qu.:1.000   1st Qu.:13.94   1st Qu.:16.66   1st Qu.: 47.00  
+ Median :1.000   Median :20.50   Median :24.24   Median : 62.00  
+ Mean   :1.418   Mean   :20.23   Mean   :23.66   Mean   : 61.89  
+ 3rd Qu.:2.000   3rd Qu.:26.24   3rd Qu.:31.06   3rd Qu.: 77.00  
+ Max.   :4.000   Max.   :41.00   Max.   :45.45   Max.   :100.00  
+   windspeed          casual         registered        count      
+ Min.   : 0.000   Min.   :  0.00   Min.   :  0.0   Min.   :  1.0  
+ 1st Qu.: 7.002   1st Qu.:  4.00   1st Qu.: 36.0   1st Qu.: 42.0  
+ Median :12.998   Median : 17.00   Median :118.0   Median :145.0  
+ Mean   :12.799   Mean   : 36.02   Mean   :155.6   Mean   :191.6  
+ 3rd Qu.:16.998   3rd Qu.: 49.00   3rd Qu.:222.0   3rd Qu.:284.0  
+ Max.   :56.997   Max.   :367.00   Max.   :886.0   Max.   :977.0  </code></pre>
+</div>
+</div>
+</section>
+<section id="minimal-data-preprocessing" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="minimal-data-preprocessing"><span class="header-section-number">3.2</span> Minimal data preprocessing</h2>
+<p>Перевіримо вибірку на наявність пропусків за допомогою функції <code>md.pattern()</code> з пакету <code>mice</code>:</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anyNA</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+FALSE
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(mice))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">md.pattern</span>(data, F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> /\     /\
+{  `---'  }
+{  O   O  }
+==&gt;  V &lt;==  No need for mice. This data set is completely observed.
+ \  \|/  /
+  `-----'
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A matrix: 2 × 13 of type dbl</caption>
+<thead>
+    <tr><th></th><th scope="col">datetime</th><th scope="col">season</th><th scope="col">holiday</th><th scope="col">workingday</th><th scope="col">weather</th><th scope="col">temp</th><th scope="col">atemp</th><th scope="col">humidity</th><th scope="col">windspeed</th><th scope="col">casual</th><th scope="col">registered</th><th scope="col">count</th><th scope="col"></th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">10886</th><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+    <tr><th scope="row"></th><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>There are no missing data! Great for us!</p>
+<p>Перетворимо категоріальні змінні до факторів:</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>season <span class="ot">&lt;-</span> <span class="fu">factor</span>(data<span class="sc">$</span>season)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>holiday <span class="ot">&lt;-</span> <span class="fu">factor</span>(data<span class="sc">$</span>holiday)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>workingday <span class="ot">&lt;-</span> <span class="fu">factor</span>(data<span class="sc">$</span>workingday)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>weather <span class="ot">&lt;-</span> <span class="fu">factor</span>(data<span class="sc">$</span>weather)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>holiday <span class="ot">&lt;-</span> <span class="fu">factor</span>(data<span class="sc">$</span>holiday)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data) <span class="co"># preview data</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 6 × 12</caption>
+<thead>
+    <tr><th></th><th scope="col">datetime</th><th scope="col">season</th><th scope="col">holiday</th><th scope="col">workingday</th><th scope="col">weather</th><th scope="col">temp</th><th scope="col">atemp</th><th scope="col">humidity</th><th scope="col">windspeed</th><th scope="col">casual</th><th scope="col">registered</th><th scope="col">count</th></tr>
+    <tr><th></th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>2011-01-01 00:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>81</td><td>0.0000</td><td>3</td><td>13</td><td>16</td></tr>
+    <tr><th scope="row">2</th><td>2011-01-01 01:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.02</td><td>13.635</td><td>80</td><td>0.0000</td><td>8</td><td>32</td><td>40</td></tr>
+    <tr><th scope="row">3</th><td>2011-01-01 02:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.02</td><td>13.635</td><td>80</td><td>0.0000</td><td>5</td><td>27</td><td>32</td></tr>
+    <tr><th scope="row">4</th><td>2011-01-01 03:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>75</td><td>0.0000</td><td>3</td><td>10</td><td>13</td></tr>
+    <tr><th scope="row">5</th><td>2011-01-01 04:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>75</td><td>0.0000</td><td>0</td><td> 1</td><td> 1</td></tr>
+    <tr><th scope="row">6</th><td>2011-01-01 05:00:00</td><td>1</td><td>0</td><td>0</td><td>2</td><td>9.84</td><td>12.880</td><td>75</td><td>6.0032</td><td>0</td><td> 1</td><td> 1</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>У наборі даних наявні 3 вихідних параметра: <code>casual,</code>registered<code>,</code>count<code>, де $casual + registered = count$. Здійснимо прогноз</code>count`. Видалимо змінні, які використовуватися нами не будуть:</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#data$casual &lt;- NULL</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#data$registered &lt;- NULL</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># or with dplyr</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(dplyr))</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(casual, registered))</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 6 × 10</caption>
+<thead>
+    <tr><th></th><th scope="col">datetime</th><th scope="col">season</th><th scope="col">holiday</th><th scope="col">workingday</th><th scope="col">weather</th><th scope="col">temp</th><th scope="col">atemp</th><th scope="col">humidity</th><th scope="col">windspeed</th><th scope="col">count</th></tr>
+    <tr><th></th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>2011-01-01 00:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>81</td><td>0.0000</td><td>16</td></tr>
+    <tr><th scope="row">2</th><td>2011-01-01 01:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.02</td><td>13.635</td><td>80</td><td>0.0000</td><td>40</td></tr>
+    <tr><th scope="row">3</th><td>2011-01-01 02:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.02</td><td>13.635</td><td>80</td><td>0.0000</td><td>32</td></tr>
+    <tr><th scope="row">4</th><td>2011-01-01 03:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>75</td><td>0.0000</td><td>13</td></tr>
+    <tr><th scope="row">5</th><td>2011-01-01 04:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>75</td><td>0.0000</td><td> 1</td></tr>
+    <tr><th scope="row">6</th><td>2011-01-01 05:00:00</td><td>1</td><td>0</td><td>0</td><td>2</td><td>9.84</td><td>12.880</td><td>75</td><td>6.0032</td><td> 1</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exploratory-data-analysis" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="exploratory-data-analysis"><span class="header-section-number">3.3</span> Exploratory data analysis</h2>
+<p>Оцінимо звязки між числовими змінними та вихідним показником через кореляцію:</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">select</span>(temp<span class="sc">:</span>count) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">cor</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a> <span class="fu">as.data.frame</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 5 × 5</caption>
+<thead>
+    <tr><th></th><th scope="col">temp</th><th scope="col">atemp</th><th scope="col">humidity</th><th scope="col">windspeed</th><th scope="col">count</th></tr>
+    <tr><th></th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">temp</th><td> 1.00000000</td><td> 0.98494811</td><td>-0.06494877</td><td>-0.01785201</td><td> 0.3944536</td></tr>
+    <tr><th scope="row">atemp</th><td> 0.98494811</td><td> 1.00000000</td><td>-0.04353571</td><td>-0.05747300</td><td> 0.3897844</td></tr>
+    <tr><th scope="row">humidity</th><td>-0.06494877</td><td>-0.04353571</td><td> 1.00000000</td><td>-0.31860699</td><td>-0.3173715</td></tr>
+    <tr><th scope="row">windspeed</th><td>-0.01785201</td><td>-0.05747300</td><td>-0.31860699</td><td> 1.00000000</td><td> 0.1013695</td></tr>
+    <tr><th scope="row">count</th><td> 0.39445364</td><td> 0.38978444</td><td>-0.31737148</td><td> 0.10136947</td><td> 1.0000000</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Щоб оглянути інформацію про частоту спостежень по сезонах варто скористатися записом:</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">group_by</span>(season) <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">summarize</span>(<span class="at">n =</span> <span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A tibble: 4 × 2</caption>
+<thead>
+    <tr><th scope="col">season</th><th scope="col">n</th></tr>
+    <tr><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><td>1</td><td>2686</td></tr>
+    <tr><td>2</td><td>2733</td></tr>
+    <tr><td>3</td><td>2733</td></tr>
+    <tr><td>4</td><td>2734</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># llok like we have almost the same count by each season</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(season)) <span class="sc">+</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> season)) <span class="sc">+</span> </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Holidays plot</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">group_by</span>(holiday) <span class="sc">%&gt;%</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a> <span class="fu">summarize</span>(<span class="at">n =</span> <span class="fu">n</span>())</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(holiday)) <span class="sc">+</span> <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> holiday)) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A tibble: 2 × 2</caption>
+<thead>
+    <tr><th scope="col">holiday</th><th scope="col">n</th></tr>
+    <tr><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><td>0</td><td>10575</td></tr>
+    <tr><td>1</td><td>  311</td></tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-12-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">group_by</span>(workingday) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">summarize</span>(<span class="at">n =</span> <span class="fu">n</span>())</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Working dats plot</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(workingday)) <span class="sc">+</span> <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> workingday)) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A tibble: 2 × 2</caption>
+<thead>
+    <tr><th scope="col">workingday</th><th scope="col">n</th></tr>
+    <tr><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><td>0</td><td>3474</td></tr>
+    <tr><td>1</td><td>7412</td></tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-13-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" checked=""><code>weather</code><ul class="task-list">
+<li><input type="checkbox" disabled="" checked="">1: Clear, Few clouds, Partly cloudy, Partly cloudy</li>
+<li><input type="checkbox" disabled="" checked="">2: Mist + Cloudy, Mist + Broken clouds, Mist + Few clouds, Mist</li>
+<li><input type="checkbox" disabled="" checked="">3: Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds</li>
+<li><input type="checkbox" disabled="" checked="">4: Heavy Rain + Ice Pallets + Thunderstorm + Mist, Snow + Fog</li>
+</ul></li>
+</ul>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># weather plot</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(weather)) <span class="sc">+</span> <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> weather)) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-14-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Переглянемо також залежність між числовими факторами та кількістю прокатів байків. Для температури це матиме запис:</p>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># temp</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>data<span class="sc">$</span>temp, <span class="at">y=</span>data<span class="sc">$</span>count)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(temp, count)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-16-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># atemp</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(atemp, count)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-17-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># humidity</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(humidity, count)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-18-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># windspeed</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(windspeed, count)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-19-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Переглянемо також загальний розподіл частоти замовлень байків на гістограмі:</p>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(count)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">25</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">fill =</span> <span class="st">'blue'</span>, <span class="at">color=</span><span class="st">'black'</span>)  <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-20-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>При спробі побудувати графік залежності між датою та кількістю замовлень байків ми отримаємо помилку або графік, що не відповідає порядку дат, оскільки на даний момент R не сприймає поле datetime як дату. Перетворимо дату за допомгою функції <code>as.POSIXct()</code>:</p>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>datetime <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(data<span class="sc">$</span>datetime)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(datetime, count)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-21-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Чи можна прослідкувати зміну кількості замовлень в залежності від пори року з цього графіку?</p>
+<p>Покращити вигляд графіка можна додавання параметрів у <code>geom_point()</code>:</p>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(datetime, count)) <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>temp)) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-22-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Переглянемо як час оренди байка впливає на кількість замовлень:</p>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="fu">format</span>(datetime, <span class="st">"%H"</span>), count)) <span class="sc">+</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>temp), <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-23-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Also, we can add new column to our dataset and use it:</p>
+<div class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">hour_rent =</span> <span class="fu">as.numeric</span>(<span class="fu">format</span>(datetime, <span class="st">"%H"</span>)))</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 6 × 11</caption>
+<thead>
+    <tr><th></th><th scope="col">datetime</th><th scope="col">season</th><th scope="col">holiday</th><th scope="col">workingday</th><th scope="col">weather</th><th scope="col">temp</th><th scope="col">atemp</th><th scope="col">humidity</th><th scope="col">windspeed</th><th scope="col">count</th><th scope="col">hour_rent</th></tr>
+    <tr><th></th><th scope="col">&lt;dttm&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>2011-01-01 00:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>81</td><td>0.0000</td><td>16</td><td>0</td></tr>
+    <tr><th scope="row">2</th><td>2011-01-01 01:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.02</td><td>13.635</td><td>80</td><td>0.0000</td><td>40</td><td>1</td></tr>
+    <tr><th scope="row">3</th><td>2011-01-01 02:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.02</td><td>13.635</td><td>80</td><td>0.0000</td><td>32</td><td>2</td></tr>
+    <tr><th scope="row">4</th><td>2011-01-01 03:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>75</td><td>0.0000</td><td>13</td><td>3</td></tr>
+    <tr><th scope="row">5</th><td>2011-01-01 04:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>75</td><td>0.0000</td><td> 1</td><td>4</td></tr>
+    <tr><th scope="row">6</th><td>2011-01-01 05:00:00</td><td>1</td><td>0</td><td>0</td><td>2</td><td>9.84</td><td>12.880</td><td>75</td><td>6.0032</td><td> 1</td><td>5</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the same chart as before</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(hour_rent, count)) <span class="sc">+</span> </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>temp), <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-25-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="train-test-split" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="train-test-split"><span class="header-section-number">3.4</span> Train test split</h2>
+<p>One more splitting method is based on date. So, we can use first 70% of dataset as train and 30% as test. This method often used for timeseries forecasting. We will use it for linear regression for now.</p>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>) </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(data)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>train_count <span class="ot">=</span> <span class="fu">ceiling</span>(<span class="fl">0.7</span> <span class="sc">*</span> <span class="fu">nrow</span>(data))</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>train_count</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>test_count <span class="ot">=</span> <span class="fu">nrow</span>(data) <span class="sc">-</span> train_count</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>test_count</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+10886
+</div>
+<div class="cell-output cell-output-display">
+7621
+</div>
+<div class="cell-output cell-output-display">
+3265
+</div>
+</div>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(datetime) <span class="co"># sort by datetime</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">slice_head</span>(<span class="at">n =</span> train_count)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(train_data)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>test_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">slice_tail</span>(<span class="at">n =</span> test_count)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(test_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+7621
+</div>
+<div class="cell-output cell-output-display">
+3265
+</div>
+</div>
+<div class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># lets compare last from train and first from test</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(train_data)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(test_data) <span class="co"># ok!</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 6 × 11</caption>
+<thead>
+    <tr><th></th><th scope="col">datetime</th><th scope="col">season</th><th scope="col">holiday</th><th scope="col">workingday</th><th scope="col">weather</th><th scope="col">temp</th><th scope="col">atemp</th><th scope="col">humidity</th><th scope="col">windspeed</th><th scope="col">count</th><th scope="col">hour_rent</th></tr>
+    <tr><th></th><th scope="col">&lt;dttm&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">7616</th><td>2012-05-16 16:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>29.52</td><td>32.575</td><td>45</td><td> 7.0015</td><td>446</td><td>16</td></tr>
+    <tr><th scope="row">7617</th><td>2012-05-16 17:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>29.52</td><td>33.335</td><td>51</td><td>12.9980</td><td>873</td><td>17</td></tr>
+    <tr><th scope="row">7618</th><td>2012-05-16 18:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>29.52</td><td>33.335</td><td>51</td><td>15.0013</td><td>846</td><td>18</td></tr>
+    <tr><th scope="row">7619</th><td>2012-05-16 19:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>28.70</td><td>32.575</td><td>54</td><td>19.0012</td><td>590</td><td>19</td></tr>
+    <tr><th scope="row">7620</th><td>2012-05-16 20:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>27.06</td><td>31.060</td><td>65</td><td>16.9979</td><td>459</td><td>20</td></tr>
+    <tr><th scope="row">7621</th><td>2012-05-16 21:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>26.24</td><td>30.305</td><td>73</td><td>12.9980</td><td>393</td><td>21</td></tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 6 × 11</caption>
+<thead>
+    <tr><th></th><th scope="col">datetime</th><th scope="col">season</th><th scope="col">holiday</th><th scope="col">workingday</th><th scope="col">weather</th><th scope="col">temp</th><th scope="col">atemp</th><th scope="col">humidity</th><th scope="col">windspeed</th><th scope="col">count</th><th scope="col">hour_rent</th></tr>
+    <tr><th></th><th scope="col">&lt;dttm&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>2012-05-16 22:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>26.24</td><td>30.305</td><td>73</td><td>11.0014</td><td>286</td><td>22</td></tr>
+    <tr><th scope="row">2</th><td>2012-05-16 23:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>25.42</td><td>29.545</td><td>78</td><td> 7.0015</td><td>133</td><td>23</td></tr>
+    <tr><th scope="row">3</th><td>2012-05-17 00:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>24.60</td><td>28.790</td><td>78</td><td> 8.9981</td><td> 79</td><td> 0</td></tr>
+    <tr><th scope="row">4</th><td>2012-05-17 01:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>24.60</td><td>28.030</td><td>83</td><td>11.0014</td><td> 28</td><td> 1</td></tr>
+    <tr><th scope="row">5</th><td>2012-05-17 02:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>24.60</td><td>28.790</td><td>78</td><td>11.0014</td><td> 16</td><td> 2</td></tr>
+    <tr><th scope="row">6</th><td>2012-05-17 03:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>24.60</td><td>29.545</td><td>73</td><td>16.9979</td><td>  3</td><td> 3</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+<section id="model-building" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="model-building"><span class="header-section-number">3.5</span> Model building</h2>
+<p>Побудуємо напройстішу модель залежності середньої температури за день та кількості орендованих байків:</p>
+<div class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>lm_bike <span class="ot">&lt;-</span> <span class="fu">lm</span>(count <span class="sc">~</span> atemp, train_data)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_bike)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>
+Call:
+lm(formula = count ~ atemp, data = train_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-254.42  -93.91  -27.43   65.57  648.09 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  -2.0774     4.4973  -0.462    0.644    
+atemp         7.2602     0.1895  38.311   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 138.4 on 7619 degrees of freedom
+Multiple R-squared:  0.1615,    Adjusted R-squared:  0.1614 
+F-statistic:  1468 on 1 and 7619 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Спробуємо порахувати кількість орендованих байків для середніх темпертур від 10 до 30 градусів.</p>
+<p>Створимо датафрейм з послідовністю елементів 10-30 з кроком 1 та порахуємо за формулою з інформації про модель прогнозовані показники:</p>
+<p>Здійснимо прогноз за допомогою функції <code>predict()</code>:</p>
+<div class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">#predict_1030$count_model &lt;- predict(lm_bike, newdata = predict_1030)</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="co">#predict_1030 %&gt;% head()</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="co"># our results are very close, minimal difference is a result of rounding numbers in our formula</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># how it looks like at chart</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="co">#ggplot(predict_1030, aes(atemp, count_model)) + </span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a> <span class="co">#       geom_point() + </span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">#    theme_bw()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Побудуємо модель для усіх параметрів моделі окрім дати:</p>
+<div class="cell" data-execution_count="32">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>lm_bike <span class="ot">&lt;-</span> <span class="fu">lm</span>(count<span class="sc">~</span>.<span class="sc">-</span>datetime, train_data)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_bike)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>
+Call:
+lm(formula = count ~ . - datetime, data = train_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-283.67  -78.72  -25.68   46.27  587.17 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  15.67996    8.85332   1.771   0.0766 .  
+season2       9.39674    4.59288   2.046   0.0408 *  
+season3     -40.29356    6.46891  -6.229 4.95e-10 ***
+season4      21.14562    4.40422   4.801 1.61e-06 ***
+holiday1     -8.46508    8.79408  -0.963   0.3358    
+workingday1  -4.89327    3.12276  -1.567   0.1172    
+weather2      2.76675    3.47283   0.797   0.4257    
+weather3    -31.30849    5.61763  -5.573 2.59e-08 ***
+weather4     85.56066  122.62585   0.698   0.4854    
+temp          1.34075    1.67470   0.801   0.4234    
+atemp         6.30809    1.48446   4.249 2.17e-05 ***
+humidity     -1.49856    0.08884 -16.868  &lt; 2e-16 ***
+windspeed     0.35086    0.19131   1.834   0.0667 .  
+hour_rent     6.20760    0.21640  28.685  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 122.5 on 7607 degrees of freedom
+Multiple R-squared:  0.3438,    Adjusted R-squared:  0.3427 
+F-statistic: 306.6 on 13 and 7607 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Перевіримо модель на мультиколінеарність:</p>
+<div class="cell" data-execution_count="33">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(car))</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">vif</span>(lm_bike)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A matrix: 9 × 3 of type dbl</caption>
+<thead>
+    <tr><th></th><th scope="col">GVIF</th><th scope="col">Df</th><th scope="col">GVIF^(1/(2*Df))</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">season</th><td> 2.941744</td><td>3</td><td>1.197018</td></tr>
+    <tr><th scope="row">holiday</th><td> 1.076162</td><td>1</td><td>1.037382</td></tr>
+    <tr><th scope="row">workingday</th><td> 1.072163</td><td>1</td><td>1.035453</td></tr>
+    <tr><th scope="row">weather</th><td> 1.291207</td><td>3</td><td>1.043516</td></tr>
+    <tr><th scope="row">temp</th><td>83.073739</td><td>1</td><td>9.114480</td></tr>
+    <tr><th scope="row">atemp</th><td>78.281362</td><td>1</td><td>8.847676</td></tr>
+    <tr><th scope="row">humidity</th><td> 1.594124</td><td>1</td><td>1.262586</td></tr>
+    <tr><th scope="row">windspeed</th><td> 1.331723</td><td>1</td><td>1.154003</td></tr>
+    <tr><th scope="row">hour_rent</th><td> 1.135437</td><td>1</td><td>1.065569</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Виключимо корельовані показники з моделі за принципом - залишити той, що має вищу кореляцію із залежним фактором. У нашому випадку це <code>temp</code>:</p>
+<div class="cell" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>lm_bike <span class="ot">&lt;-</span> <span class="fu">lm</span>(count<span class="sc">~</span>.<span class="sc">-</span>datetime<span class="sc">-</span>atemp, train_data)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_bike)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>
+Call:
+lm(formula = count ~ . - datetime - atemp, data = train_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-297.02  -79.11  -25.60   46.35  585.12 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  26.97221    8.45456   3.190  0.00143 ** 
+season2       9.25257    4.59790   2.012  0.04422 *  
+season3     -45.22396    6.37114  -7.098 1.38e-12 ***
+season4      22.00064    4.40455   4.995 6.02e-07 ***
+holiday1    -11.34365    8.77778  -1.292  0.19629    
+workingday1  -4.86349    3.12625  -1.556  0.11982    
+weather2      3.02977    3.47616   0.872  0.38346    
+weather3    -32.19037    5.62008  -5.728 1.06e-08 ***
+weather4     88.33390  122.76150   0.720  0.47182    
+temp          8.34447    0.29736  28.062  &lt; 2e-16 ***
+humidity     -1.47674    0.08879 -16.632  &lt; 2e-16 ***
+windspeed     0.06683    0.17945   0.372  0.70959    
+hour_rent     6.20731    0.21665  28.652  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 122.7 on 7608 degrees of freedom
+Multiple R-squared:  0.3422,    Adjusted R-squared:  0.3412 
+F-statistic: 329.9 on 12 and 7608 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Далі побудуємо модель на основі алгоритму stepwise та порівняємо з поточними характеристиками моделі.</p>
+<p>Створимо моделі для проходів у два боки:</p>
+<div class="cell" data-execution_count="35">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>start_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(count <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> train_data)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>end_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(count <span class="sc">~</span> . <span class="sc">-</span> datetime <span class="sc">-</span> temp, <span class="at">data =</span> train_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Запустимо алгоритм функцією <code>step()</code>:</p>
+<div class="cell" data-execution_count="36">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>lm_bike_stepwise <span class="ot">&lt;-</span> <span class="fu">step</span>(start_mod,</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">scope =</span> <span class="fu">list</span>(<span class="at">lower =</span> start_mod, <span class="at">upper =</span> end_mod),</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">direction =</span> <span class="st">"both"</span>, <span class="at">trace =</span> <span class="dv">1</span>, <span class="at">steps =</span> <span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Start:  AIC=76488.12
+count ~ 1
+
+             Df Sum of Sq       RSS   AIC
++ atemp       1  28114587 145942663 75148
++ hour_rent   1  27600736 146456514 75174
++ humidity    1  15503642 158553609 75779
++ season      3   9131936 164925314 76083
++ weather     3   3537078 170520172 76338
++ windspeed   1   2112392 171944858 76397
+&lt;none&gt;                    174057250 76488
++ holiday     1     12170 174045081 76490
++ workingday  1      3511 174053739 76490
+
+Step:  AIC=75147.53
+count ~ atemp
+
+             Df Sum of Sq       RSS   AIC
++ hour_rent   1  20603748 125338915 73990
++ humidity    1  15576942 130365721 74289
++ season      3   5178271 140764392 74878
++ weather     3   2989985 142952678 74996
++ windspeed   1   2889374 143053289 74997
+&lt;none&gt;                    145942663 75148
++ workingday  1     34765 145907898 75148
++ holiday     1        44 145942619 75150
+- atemp       1  28114587 174057250 76488
+
+Step:  AIC=73989.67
+count ~ atemp + hour_rent
+
+             Df Sum of Sq       RSS   AIC
++ humidity    1   8093815 117245100 73483
++ season      3   2905720 122433195 73817
++ weather     3   2861080 122477834 73820
++ windspeed   1   1038961 124299954 73928
+&lt;none&gt;                    125338915 73990
++ workingday  1     29661 125309254 73990
++ holiday     1       313 125338602 73992
+- hour_rent   1  20603748 145942663 75148
+- atemp       1  21117599 146456514 75174
+
+Step:  AIC=73482.93
+count ~ atemp + hour_rent + humidity
+
+             Df Sum of Sq       RSS   AIC
++ season      3   2375796 114869304 73333
++ weather     3    534048 116711052 73454
++ workingday  1     32372 117212728 73483
+&lt;none&gt;                    117245100 73483
++ windspeed   1     22790 117222310 73483
++ holiday     1      6750 117238350 73484
+- humidity    1   8093815 125338915 73990
+- hour_rent   1  13120621 130365721 74289
+- atemp       1  22173444 139418544 74801
+
+Step:  AIC=73332.92
+count ~ atemp + hour_rent + humidity + season
+
+             Df Sum of Sq       RSS   AIC
++ weather     3    525600 114343704 73304
++ workingday  1     42319 114826985 73332
++ windspeed   1     31234 114838071 73333
+&lt;none&gt;                    114869304 73333
++ holiday     1      2238 114867066 73335
+- season      3   2375796 117245100 73483
+- humidity    1   7563890 122433195 73817
+- atemp       1  12150238 127019542 74097
+- hour_rent   1  12266423 127135727 74104
+
+Step:  AIC=73303.97
+count ~ atemp + hour_rent + humidity + season + weather
+
+             Df Sum of Sq       RSS   AIC
++ windspeed   1     77129 114266576 73301
++ workingday  1     30192 114313512 73304
+&lt;none&gt;                    114343704 73304
++ holiday     1      3786 114339918 73306
+- weather     3    525600 114869304 73333
+- season      3   2367348 116711052 73454
+- humidity    1   5224113 119567817 73642
+- atemp       1  12055477 126399182 74066
+- hour_rent   1  12568342 126912046 74097
+
+Step:  AIC=73300.82
+count ~ atemp + hour_rent + humidity + season + weather + windspeed
+
+             Df Sum of Sq       RSS   AIC
+&lt;none&gt;                    114266576 73301
++ workingday  1     28599 114237977 73301
++ holiday     1      4334 114262242 73303
+- windspeed   1     77129 114343704 73304
+- weather     3    571495 114838071 73333
+- season      3   2382626 116649202 73452
+- humidity    1   4315759 118582335 73581
+- atemp       1  12116310 126382885 74067
+- hour_rent   1  12411506 126678081 74085</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="37">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check the summary</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_bike_stepwise)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>
+Call:
+lm(formula = count ~ atemp + hour_rent + humidity + season + 
+    weather + windspeed, data = train_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-285.56  -78.70  -25.63   47.20  586.14 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  10.56655    8.35898   1.264   0.2062    
+atemp         7.46224    0.26269  28.407  &lt; 2e-16 ***
+hour_rent     6.21766    0.21626  28.750  &lt; 2e-16 ***
+humidity     -1.50051    0.08851 -16.954  &lt; 2e-16 ***
+season2       9.95637    4.55753   2.185   0.0289 *  
+season3     -38.55100    6.14342  -6.275 3.68e-10 ***
+season4      21.22676    4.40003   4.824 1.43e-06 ***
+weather2      2.68041    3.47136   0.772   0.4400    
+weather3    -31.47986    5.60817  -5.613 2.06e-08 ***
+weather4     83.31112  122.62122   0.679   0.4969    
+windspeed     0.40641    0.17932   2.266   0.0235 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 122.5 on 7610 degrees of freedom
+Multiple R-squared:  0.3435,    Adjusted R-squared:  0.3426 
+F-statistic: 398.2 on 10 and 7610 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p><span class="math inline">\(R^2\)</span> increses!</p>
+<p>Об’єднаємо для наочності коефіцієнти у один датафрейм:</p>
+<div class="cell" data-execution_count="38">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>lm_coefs_def <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">lm_name =</span> <span class="fu">names</span>(lm_bike<span class="sc">$</span>coefficients),</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">name =</span> lm_bike<span class="sc">$</span>coefficients, </span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">row.names =</span> <span class="fu">c</span>() <span class="co"># cleaning rownames</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>                          )</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>lm_coefs_def</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 13 × 2</caption>
+<thead>
+    <tr><th scope="col">lm_name</th><th scope="col">name</th></tr>
+    <tr><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><td>(Intercept)</td><td> 26.97221255</td></tr>
+    <tr><td>season2    </td><td>  9.25256711</td></tr>
+    <tr><td>season3    </td><td>-45.22395805</td></tr>
+    <tr><td>season4    </td><td> 22.00064078</td></tr>
+    <tr><td>holiday1   </td><td>-11.34364536</td></tr>
+    <tr><td>workingday1</td><td> -4.86348665</td></tr>
+    <tr><td>weather2   </td><td>  3.02977126</td></tr>
+    <tr><td>weather3   </td><td>-32.19036573</td></tr>
+    <tr><td>weather4   </td><td> 88.33390060</td></tr>
+    <tr><td>temp       </td><td>  8.34447012</td></tr>
+    <tr><td>humidity   </td><td> -1.47674448</td></tr>
+    <tr><td>windspeed  </td><td>  0.06683245</td></tr>
+    <tr><td>hour_rent  </td><td>  6.20730753</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-execution_count="39">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>lm_coefs_sw <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">lm_name =</span> <span class="fu">names</span>(lm_bike_stepwise<span class="sc">$</span>coefficients), <span class="at">name =</span> lm_bike_stepwise<span class="sc">$</span>coefficients, <span class="at">row.names =</span> <span class="fu">c</span>())</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>lm_coefs_sw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 11 × 2</caption>
+<thead>
+    <tr><th scope="col">lm_name</th><th scope="col">name</th></tr>
+    <tr><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><td>(Intercept)</td><td> 10.5665521</td></tr>
+    <tr><td>atemp      </td><td>  7.4622378</td></tr>
+    <tr><td>hour_rent  </td><td>  6.2176579</td></tr>
+    <tr><td>humidity   </td><td> -1.5005074</td></tr>
+    <tr><td>season2    </td><td>  9.9563690</td></tr>
+    <tr><td>season3    </td><td>-38.5510028</td></tr>
+    <tr><td>season4    </td><td> 21.2267554</td></tr>
+    <tr><td>weather2   </td><td>  2.6804117</td></tr>
+    <tr><td>weather3   </td><td>-31.4798561</td></tr>
+    <tr><td>weather4   </td><td> 83.3111193</td></tr>
+    <tr><td>windspeed  </td><td>  0.4064147</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-execution_count="40">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># lets combine coefficients from both models</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>lm_coefs <span class="ot">&lt;-</span> <span class="fu">merge</span>(lm_coefs_def, lm_coefs_sw, <span class="at">by =</span> <span class="st">"lm_name"</span>, <span class="at">X.all =</span> T, <span class="at">X.all =</span> T)</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(lm_coefs) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"variable"</span>, <span class="st">"lm"</span>, <span class="st">"lm_sw"</span>)</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>lm_coefs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 10 × 3</caption>
+<thead>
+    <tr><th scope="col">variable</th><th scope="col">lm</th><th scope="col">lm_sw</th></tr>
+    <tr><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><td>(Intercept)</td><td> 26.97221255</td><td> 10.5665521</td></tr>
+    <tr><td>hour_rent  </td><td>  6.20730753</td><td>  6.2176579</td></tr>
+    <tr><td>humidity   </td><td> -1.47674448</td><td> -1.5005074</td></tr>
+    <tr><td>season2    </td><td>  9.25256711</td><td>  9.9563690</td></tr>
+    <tr><td>season3    </td><td>-45.22395805</td><td>-38.5510028</td></tr>
+    <tr><td>season4    </td><td> 22.00064078</td><td> 21.2267554</td></tr>
+    <tr><td>weather2   </td><td>  3.02977126</td><td>  2.6804117</td></tr>
+    <tr><td>weather3   </td><td>-32.19036573</td><td>-31.4798561</td></tr>
+    <tr><td>weather4   </td><td> 88.33390060</td><td> 83.3111193</td></tr>
+    <tr><td>windspeed  </td><td>  0.06683245</td><td>  0.4064147</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Як бачимо моделі мають незначні відмінності.</p>
+<hr>
+</section>
+<section id="model-errors-analysis" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="model-errors-analysis"><span class="header-section-number">3.6</span> Model errors analysis</h2>
+<p>Запишемо у <code>train</code> набір даних модельовані значення <code>count</code> та похибки:</p>
+<div class="cell" data-execution_count="41">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>train_data<span class="sc">$</span>predicted <span class="ot">&lt;-</span> lm_bike<span class="sc">$</span>fitted.values</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>train_data<span class="sc">$</span>residuals <span class="ot">&lt;-</span> lm_bike<span class="sc">$</span>residuals</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(train_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 6 × 13</caption>
+<thead>
+    <tr><th></th><th scope="col">datetime</th><th scope="col">season</th><th scope="col">holiday</th><th scope="col">workingday</th><th scope="col">weather</th><th scope="col">temp</th><th scope="col">atemp</th><th scope="col">humidity</th><th scope="col">windspeed</th><th scope="col">count</th><th scope="col">hour_rent</th><th scope="col">predicted</th><th scope="col">residuals</th></tr>
+    <tr><th></th><th scope="col">&lt;dttm&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>2011-01-01 00:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>81</td><td>0.0000</td><td>16</td><td>0</td><td>-10.534505</td><td> 26.534505</td></tr>
+    <tr><th scope="row">2</th><td>2011-01-01 01:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.02</td><td>13.635</td><td>80</td><td>0.0000</td><td>40</td><td>1</td><td> -9.692918</td><td> 49.692918</td></tr>
+    <tr><th scope="row">3</th><td>2011-01-01 02:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.02</td><td>13.635</td><td>80</td><td>0.0000</td><td>32</td><td>2</td><td> -3.485611</td><td> 35.485611</td></tr>
+    <tr><th scope="row">4</th><td>2011-01-01 03:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>75</td><td>0.0000</td><td>13</td><td>3</td><td> 16.947885</td><td> -3.947885</td></tr>
+    <tr><th scope="row">5</th><td>2011-01-01 04:00:00</td><td>1</td><td>0</td><td>0</td><td>1</td><td>9.84</td><td>14.395</td><td>75</td><td>0.0000</td><td> 1</td><td>4</td><td> 23.155192</td><td>-22.155192</td></tr>
+    <tr><th scope="row">6</th><td>2011-01-01 05:00:00</td><td>1</td><td>0</td><td>0</td><td>2</td><td>9.84</td><td>12.880</td><td>75</td><td>6.0032</td><td> 1</td><td>5</td><td> 32.793480</td><td>-31.793480</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Візуалізуємо відхилення моделі:</p>
+<div class="cell" data-execution_count="42">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> train_data[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="43">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(plot_data)), <span class="at">y =</span> <span class="fu">as.numeric</span>(count))) <span class="sc">+</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(plot_data)), <span class="at">yend =</span> predicted), <span class="at">alpha =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> residuals), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_gradient2</span>(<span class="at">low =</span> <span class="st">"blue"</span>, <span class="at">mid =</span> <span class="st">"white"</span>, <span class="at">high =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> predicted), <span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="fl">0.5</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning message:
+"`guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; = "none")` instead."</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-44-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Lets check the same for test data</p>
+<p>First we need to predict values:</p>
+<div class="cell" data-execution_count="44">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>test_data<span class="sc">$</span>predicted <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm_bike, <span class="at">newdata =</span> test_data)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(test_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 6 × 12</caption>
+<thead>
+    <tr><th></th><th scope="col">datetime</th><th scope="col">season</th><th scope="col">holiday</th><th scope="col">workingday</th><th scope="col">weather</th><th scope="col">temp</th><th scope="col">atemp</th><th scope="col">humidity</th><th scope="col">windspeed</th><th scope="col">count</th><th scope="col">hour_rent</th><th scope="col">predicted</th></tr>
+    <tr><th></th><th scope="col">&lt;dttm&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>2012-05-16 22:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>26.24</td><td>30.305</td><td>73</td><td>11.0014</td><td>286</td><td>22</td><td>279.8139</td></tr>
+    <tr><th scope="row">2</th><td>2012-05-16 23:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>25.42</td><td>29.545</td><td>78</td><td> 7.0015</td><td>133</td><td>23</td><td>271.5277</td></tr>
+    <tr><th scope="row">3</th><td>2012-05-17 00:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>24.60</td><td>28.790</td><td>78</td><td> 8.9981</td><td> 79</td><td> 0</td><td>122.0506</td></tr>
+    <tr><th scope="row">4</th><td>2012-05-17 01:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>24.60</td><td>28.030</td><td>83</td><td>11.0014</td><td> 28</td><td> 1</td><td>121.0080</td></tr>
+    <tr><th scope="row">5</th><td>2012-05-17 02:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>24.60</td><td>28.790</td><td>78</td><td>11.0014</td><td> 16</td><td> 2</td><td>134.5991</td></tr>
+    <tr><th scope="row">6</th><td>2012-05-17 03:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>24.60</td><td>29.545</td><td>73</td><td>16.9979</td><td>  3</td><td> 3</td><td>148.5908</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-execution_count="45">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># resulduals calculation</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>test_data<span class="sc">$</span>residuals <span class="ot">&lt;-</span> test_data<span class="sc">$</span>count <span class="sc">-</span> test_data<span class="sc">$</span>predicted</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(test_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 6 × 13</caption>
+<thead>
+    <tr><th></th><th scope="col">datetime</th><th scope="col">season</th><th scope="col">holiday</th><th scope="col">workingday</th><th scope="col">weather</th><th scope="col">temp</th><th scope="col">atemp</th><th scope="col">humidity</th><th scope="col">windspeed</th><th scope="col">count</th><th scope="col">hour_rent</th><th scope="col">predicted</th><th scope="col">residuals</th></tr>
+    <tr><th></th><th scope="col">&lt;dttm&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">1</th><td>2012-05-16 22:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>26.24</td><td>30.305</td><td>73</td><td>11.0014</td><td>286</td><td>22</td><td>279.8139</td><td>   6.186142</td></tr>
+    <tr><th scope="row">2</th><td>2012-05-16 23:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>25.42</td><td>29.545</td><td>78</td><td> 7.0015</td><td>133</td><td>23</td><td>271.5277</td><td>-138.527654</td></tr>
+    <tr><th scope="row">3</th><td>2012-05-17 00:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>24.60</td><td>28.790</td><td>78</td><td> 8.9981</td><td> 79</td><td> 0</td><td>122.0506</td><td> -43.050553</td></tr>
+    <tr><th scope="row">4</th><td>2012-05-17 01:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>24.60</td><td>28.030</td><td>83</td><td>11.0014</td><td> 28</td><td> 1</td><td>121.0080</td><td> -93.008024</td></tr>
+    <tr><th scope="row">5</th><td>2012-05-17 02:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>24.60</td><td>28.790</td><td>78</td><td>11.0014</td><td> 16</td><td> 2</td><td>134.5991</td><td>-118.599054</td></tr>
+    <tr><th scope="row">6</th><td>2012-05-17 03:00:00</td><td>2</td><td>0</td><td>1</td><td>1</td><td>24.60</td><td>29.545</td><td>73</td><td>16.9979</td><td>  3</td><td> 3</td><td>148.5908</td><td>-145.590844</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-execution_count="46">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> test_data[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="47">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(plot_data)), <span class="at">y =</span> <span class="fu">as.numeric</span>(count))) <span class="sc">+</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(plot_data)), <span class="at">yend =</span> predicted), <span class="at">alpha =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> residuals), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_gradient2</span>(<span class="at">low =</span> <span class="st">"blue"</span>, <span class="at">mid =</span> <span class="st">"white"</span>, <span class="at">high =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> predicted), <span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="fl">0.5</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning message:
+"`guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; = "none")` instead."</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="032-supervised-learning-linear-regression-2_files/figure-html/cell-48-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="48">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelr)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>resids <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">R2 =</span> <span class="fu">c</span>(<span class="fu">rsquare</span>(lm_bike, <span class="at">data =</span> train_data), <span class="fu">rsquare</span>(lm_bike, <span class="at">data =</span> test_data)),</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">MSE =</span> <span class="fu">c</span>(<span class="fu">mse</span>(lm_bike, <span class="at">data =</span> train_data),<span class="fu">mse</span>(lm_bike, <span class="at">data =</span> test_data)),</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">RMSE =</span> <span class="fu">c</span>(<span class="fu">rmse</span>(lm_bike, <span class="at">data =</span> train_data), <span class="fu">rmse</span>(lm_bike, <span class="at">data =</span> test_data))<span class="co">#,</span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#MAE = c(mae(lm_bike, data = train_data), mae(lm_bike, data = test_data)), # if needed </span></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#MAPE = c(mape(lm_bike, data = train_data), mape(lm_bike, data = test_data)) # if needed</span></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>          </span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(resids) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"train"</span>, <span class="st">"test"</span>) <span class="co"># give names for rows</span></span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>resids</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.frame: 2 × 3</caption>
+<thead>
+    <tr><th></th><th scope="col">R2</th><th scope="col">MSE</th><th scope="col">RMSE</th></tr>
+    <tr><th></th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><th scope="row">train</th><td>0.3422443</td><td>15022.59</td><td>122.5667</td></tr>
+    <tr><th scope="row">test</th><td>0.2854741</td><td>40401.94</td><td>201.0023</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Conclusion:</strong> Test set has less RSquared and Bigger Errors variation. Train dataset is closer, because it built on training data and model include information about data.</p>
+<hr>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./031-supervised-learning-linear-regression-1.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Лінійна регресія. Престиж професій</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./033-supervised-learning-desicion-trees-regression.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Дерева рішень. Регресія. Баланс кредитної карти</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+      <div class="nav-footer-center">Copyright 2022, Юрій Клебан</div>
+  </div>
+</footer>
+
+
+
+</body></html>
