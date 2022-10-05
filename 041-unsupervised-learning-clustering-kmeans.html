@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Математичне моделювання в R - 2&nbsp; Лінійна регресія. Престиж професій</title>
+<title>Математичне моделювання в R - 9&nbsp; Метод k-середніх</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -93,8 +93,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./032-supervised-learning-linear-regression-2.html" rel="next">
-<link href="./030-supervised-learning.html" rel="prev">
+<link href="./037-supervised-learning-neural-network-classification.html" rel="prev">
 <link href="./img/favicon.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -139,7 +138,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Лінійна регресія. Престиж професій</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Метод k-середніх</span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -221,7 +220,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./031-supervised-learning-linear-regression-1.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Лінійна регресія. Престиж професій</span></a>
+  <a href="./031-supervised-learning-linear-regression-1.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Лінійна регресія. Престиж професій</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -266,7 +265,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./041-unsupervised-learning-clustering-kmeans.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Метод k-середніх</span></a>
+  <a href="./041-unsupervised-learning-clustering-kmeans.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Метод k-середніх</span></a>
   </div>
 </li>
       </ul>
@@ -280,28 +279,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Зміст</h2>
    
   <ul>
-  <li><a href="#dataset-overview" id="toc-dataset-overview" class="nav-link active" data-scroll-target="#dataset-overview"><span class="toc-section-number">2.1</span>  Dataset overview</a></li>
-  <li><a href="#traintest-split" id="toc-traintest-split" class="nav-link" data-scroll-target="#traintest-split"><span class="toc-section-number">2.2</span>  Train/Test split</a></li>
-  <li><a href="#short-eda-exploratory-data-analysis" id="toc-short-eda-exploratory-data-analysis" class="nav-link" data-scroll-target="#short-eda-exploratory-data-analysis"><span class="toc-section-number">2.3</span>  Short EDA (Exploratory data analysis)</a>
+  <li><a href="#dataset-overview" id="toc-dataset-overview" class="nav-link active" data-scroll-target="#dataset-overview"><span class="toc-section-number">9.1</span>  Dataset overview</a></li>
+  <li><a href="#traintest-split" id="toc-traintest-split" class="nav-link" data-scroll-target="#traintest-split"><span class="toc-section-number">9.2</span>  Train/Test split</a></li>
+  <li><a href="#short-eda-exploratory-data-analysis" id="toc-short-eda-exploratory-data-analysis" class="nav-link" data-scroll-target="#short-eda-exploratory-data-analysis"><span class="toc-section-number">9.3</span>  Short EDA (Exploratory data analysis)</a>
   <ul class="collapse">
-  <li><a href="#correlation" id="toc-correlation" class="nav-link" data-scroll-target="#correlation"><span class="toc-section-number">2.3.1</span>  Correlation</a></li>
-  <li><a href="#visual-analysis" id="toc-visual-analysis" class="nav-link" data-scroll-target="#visual-analysis"><span class="toc-section-number">2.3.2</span>  Visual analysis</a></li>
+  <li><a href="#correlation" id="toc-correlation" class="nav-link" data-scroll-target="#correlation"><span class="toc-section-number">9.3.1</span>  Correlation</a></li>
+  <li><a href="#visual-analysis" id="toc-visual-analysis" class="nav-link" data-scroll-target="#visual-analysis"><span class="toc-section-number">9.3.2</span>  Visual analysis</a></li>
   </ul></li>
-  <li><a href="#model-building" id="toc-model-building" class="nav-link" data-scroll-target="#model-building"><span class="toc-section-number">2.4</span>  Model building</a>
+  <li><a href="#model-building" id="toc-model-building" class="nav-link" data-scroll-target="#model-building"><span class="toc-section-number">9.4</span>  Model building</a>
   <ul class="collapse">
-  <li><a href="#demo-task-generating-final-formula-for-regression" id="toc-demo-task-generating-final-formula-for-regression" class="nav-link" data-scroll-target="#demo-task-generating-final-formula-for-regression"><span class="toc-section-number">2.4.1</span>  Demo task: generating final formula for regression</a></li>
-  <li><a href="#зміна-форми-залежності" id="toc-зміна-форми-залежності" class="nav-link" data-scroll-target="#зміна-форми-залежності"><span class="toc-section-number">2.4.2</span>  Зміна форми залежності</a></li>
+  <li><a href="#demo-task-generating-final-formula-for-regression" id="toc-demo-task-generating-final-formula-for-regression" class="nav-link" data-scroll-target="#demo-task-generating-final-formula-for-regression"><span class="toc-section-number">9.4.1</span>  Demo task: generating final formula for regression</a></li>
+  <li><a href="#зміна-форми-залежності" id="toc-зміна-форми-залежності" class="nav-link" data-scroll-target="#зміна-форми-залежності"><span class="toc-section-number">9.4.2</span>  Зміна форми залежності</a></li>
   </ul></li>
-  <li><a href="#prediction-on-test-data-and-accuracy" id="toc-prediction-on-test-data-and-accuracy" class="nav-link" data-scroll-target="#prediction-on-test-data-and-accuracy"><span class="toc-section-number">2.5</span>  Prediction on test data and accuracy</a>
+  <li><a href="#prediction-on-test-data-and-accuracy" id="toc-prediction-on-test-data-and-accuracy" class="nav-link" data-scroll-target="#prediction-on-test-data-and-accuracy"><span class="toc-section-number">9.5</span>  Prediction on test data and accuracy</a>
   <ul class="collapse">
-  <li><a href="#перевірка-на-мультиколінераність" id="toc-перевірка-на-мультиколінераність" class="nav-link" data-scroll-target="#перевірка-на-мультиколінераність"><span class="toc-section-number">2.5.1</span>  Перевірка на мультиколінераність</a></li>
-  <li><a href="#extending-model" id="toc-extending-model" class="nav-link" data-scroll-target="#extending-model"><span class="toc-section-number">2.5.2</span>  Extending model</a></li>
+  <li><a href="#перевірка-на-мультиколінераність" id="toc-перевірка-на-мультиколінераність" class="nav-link" data-scroll-target="#перевірка-на-мультиколінераність"><span class="toc-section-number">9.5.1</span>  Перевірка на мультиколінераність</a></li>
+  <li><a href="#extending-model" id="toc-extending-model" class="nav-link" data-scroll-target="#extending-model"><span class="toc-section-number">9.5.2</span>  Extending model</a></li>
   </ul></li>
-  <li><a href="#model-errors" id="toc-model-errors" class="nav-link" data-scroll-target="#model-errors"><span class="toc-section-number">2.6</span>  Model errors</a></li>
-  <li><a href="#features-selection" id="toc-features-selection" class="nav-link" data-scroll-target="#features-selection"><span class="toc-section-number">2.7</span>  Features selection</a>
+  <li><a href="#model-errors" id="toc-model-errors" class="nav-link" data-scroll-target="#model-errors"><span class="toc-section-number">9.6</span>  Model errors</a></li>
+  <li><a href="#features-selection" id="toc-features-selection" class="nav-link" data-scroll-target="#features-selection"><span class="toc-section-number">9.7</span>  Features selection</a>
   <ul class="collapse">
-  <li><a href="#bestsubsets-method" id="toc-bestsubsets-method" class="nav-link" data-scroll-target="#bestsubsets-method"><span class="toc-section-number">2.7.1</span>  BestSubsets method</a></li>
-  <li><a href="#stepwise-method" id="toc-stepwise-method" class="nav-link" data-scroll-target="#stepwise-method"><span class="toc-section-number">2.7.2</span>  Stepwise method</a></li>
+  <li><a href="#bestsubsets-method" id="toc-bestsubsets-method" class="nav-link" data-scroll-target="#bestsubsets-method"><span class="toc-section-number">9.7.1</span>  BestSubsets method</a></li>
+  <li><a href="#stepwise-method" id="toc-stepwise-method" class="nav-link" data-scroll-target="#stepwise-method"><span class="toc-section-number">9.7.2</span>  Stepwise method</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -311,7 +310,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Лінійна регресія. Престиж професій</span></h1>
+<h1 class="title d-none d-lg-block"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Метод k-середніх</span></h1>
 </div>
 
 
@@ -327,19 +326,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <p>Курс: Математичне моделювання в R</p>
 <hr>
-<div class="callout-important callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-caption-container flex-fill">
-Перевірити матеріали лекції!!!
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Розділ про мультиколінеарність та вибір найкращої моделі.</p>
-</div>
-</div>
 <div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("carData")</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("corrplot")</span></span>
@@ -348,17 +334,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("lmtest")</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("leaps")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="2">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setlocale</span>(<span class="st">"LC_CTYPE"</span>, <span class="st">"ukrainian"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">warn =</span> <span class="sc">-</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 'Ukrainian_Ukraine.1251'
 </div>
 </div>
-<section id="dataset-overview" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="dataset-overview"><span class="header-section-number">2.1</span> Dataset overview</h2>
+<section id="dataset-overview" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="dataset-overview"><span class="header-section-number">9.1</span> Dataset overview</h2>
 <p>У даному навчальному матеріалі використано класичний приклад даних з інформацією про престижність професій у Канаді 1971 року. Джерело: <code>carData::Prestige</code>.</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="3">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(carData)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> carData<span class="sc">::</span>Prestige</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -382,7 +368,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 <p>Переглянемо структуру даних:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="4">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>'data.frame':   102 obs. of  6 variables:
@@ -404,7 +390,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><input type="checkbox" disabled="" checked=""><code>type</code> – тип професії: bc, Blue Collar; prof, Professional, Managerial, and Technical; wc, White Collar.</li>
 </ul>
 <p>Оглянемо описову статистику факторів:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="5">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>   education          income          women           prestige    
@@ -424,10 +410,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="traintest-split" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="traintest-split"><span class="header-section-number">2.2</span> Train/Test split</h2>
+<section id="traintest-split" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="traintest-split"><span class="header-section-number">9.2</span> Train/Test split</h2>
 <p>Розділимо загальну вибірку на 2 частини: * тренувальна, 70% вибірки, для побудови регресії; * тестова, 30% вибірки, для перевірки точності моделі.</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="6">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>) <span class="co">#довільне число як точка "відправки" для генератора випадкових чисел</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Згенеруємо набір чисел від 1 до кількості спостережень у вибірці і відберемо випадквоим чином 70% із них</span></span>
@@ -442,7 +428,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 [58]  94   4  35  61  69  43  10  96  99  89  31  38  52  18</code></pre>
 </div>
 </div>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="7">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Запишемо по номерах відібраних рядків тренувальний набір даних</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> data[train_index, ]</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(train_data)</span>
@@ -488,13 +474,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="short-eda-exploratory-data-analysis" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="short-eda-exploratory-data-analysis"><span class="header-section-number">2.3</span> Short EDA (Exploratory data analysis)</h2>
-<section id="correlation" class="level3" data-number="2.3.1">
-<h3 data-number="2.3.1" class="anchored" data-anchor-id="correlation"><span class="header-section-number">2.3.1</span> Correlation</h3>
+<section id="short-eda-exploratory-data-analysis" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="short-eda-exploratory-data-analysis"><span class="header-section-number">9.3</span> Short EDA (Exploratory data analysis)</h2>
+<section id="correlation" class="level3" data-number="9.3.1">
+<h3 data-number="9.3.1" class="anchored" data-anchor-id="correlation"><span class="header-section-number">9.3.1</span> Correlation</h3>
 <p>Переглянемо наявність зв’язків між параметрами за допоомгою матриці попарних кореляцій. Дані на перетині рядків вказують на рівень кореляції між вибраними показниками.</p>
 <p>Виключимо змінну type, оскільки вона не має числового представлення:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="8">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(train_data[ ,<span class="sc">-</span><span class="dv">6</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 
@@ -514,62 +500,62 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 <p>Lets view correlation matrix with <code>corrplot()</code> function:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="9">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(corrplot))</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(<span class="fu">cor</span>(train_data[,<span class="sc">-</span><span class="dv">6</span>]) , <span class="at">method =</span> <span class="st">"number"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="031-supervised-learning-linear-regression-1_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
+<p><img src="041-unsupervised-learning-clustering-kmeans_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>You can see hight correlation between <code>education ~ prestige</code>, <code>education ~ census</code>, <code>prestige ~ income</code>.</p>
 </section>
-<section id="visual-analysis" class="level3" data-number="2.3.2">
-<h3 data-number="2.3.2" class="anchored" data-anchor-id="visual-analysis"><span class="header-section-number">2.3.2</span> Visual analysis</h3>
+<section id="visual-analysis" class="level3" data-number="9.3.2">
+<h3 data-number="9.3.2" class="anchored" data-anchor-id="visual-analysis"><span class="header-section-number">9.3.2</span> Visual analysis</h3>
 <p>Lets check data distribution of some variables</p>
 <p>Target/Output variable <code>prestige</code>:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="10">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train_data, <span class="fu">aes</span>(prestige)) <span class="sc">+</span> </span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">25</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">fill =</span> <span class="st">'blue'</span>, <span class="at">color=</span><span class="st">'black'</span>)  <span class="sc">+</span> </span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="031-supervised-learning-linear-regression-1_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+<p><img src="041-unsupervised-learning-clustering-kmeans_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>Input variable <code>income</code>:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="11">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ggplot(train_data, aes(log(income))) + </span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train_data, <span class="fu">aes</span>(income)) <span class="sc">+</span> </span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">25</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">fill =</span> <span class="st">'blue'</span>, <span class="at">color=</span><span class="st">'black'</span>)  <span class="sc">+</span> </span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="031-supervised-learning-linear-regression-1_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
+<p><img src="041-unsupervised-learning-clustering-kmeans_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>Input variable <code>women</code>:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="12">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ggplot(train_data, aes(log(women))) + </span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train_data, <span class="fu">aes</span>(women)) <span class="sc">+</span> </span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">25</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">fill =</span> <span class="st">'blue'</span>, <span class="at">color=</span><span class="st">'black'</span>)  <span class="sc">+</span> </span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="031-supervised-learning-linear-regression-1_files/figure-html/cell-13-output-1.png" class="img-fluid"></p>
+<p><img src="041-unsupervised-learning-clustering-kmeans_files/figure-html/cell-13-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <hr>
 </section>
 </section>
-<section id="model-building" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="model-building"><span class="header-section-number">2.4</span> Model building</h2>
+<section id="model-building" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="model-building"><span class="header-section-number">9.4</span> Model building</h2>
 <p>Функція <code>lm()</code> використовується для побудови лінійної регресії.</p>
 <p>Syntax: <code>lm(formula, data = train_data)</code></p>
 <p><code>formula</code> дозволяє вказати на залежність між вхідними та вихідним параметром. У даному випадку <code>prestige</code> - залежна змінна (<code>Y</code>), а усі, що після знаку <code>~</code> - незалежні (<code>X</code>).</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="13">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>lm_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="at">formula =</span> prestige <span class="sc">~</span> income <span class="sc">+</span> education, <span class="at">data =</span> train_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Для детальнішого опису параметрів побудованої моделі варто скористатися функцією <code>summary()</code>:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="14">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>
@@ -594,10 +580,10 @@ F-statistic: 127.6 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <hr>
-<section id="demo-task-generating-final-formula-for-regression" class="level3" data-number="2.4.1">
-<h3 data-number="2.4.1" class="anchored" data-anchor-id="demo-task-generating-final-formula-for-regression"><span class="header-section-number">2.4.1</span> Demo task: generating final formula for regression</h3>
+<section id="demo-task-generating-final-formula-for-regression" class="level3" data-number="9.4.1">
+<h3 data-number="9.4.1" class="anchored" data-anchor-id="demo-task-generating-final-formula-for-regression"><span class="header-section-number">9.4.1</span> Demo task: generating final formula for regression</h3>
 <p>Спробуємо створити рядковий вигляд для побудованої регресії (шляхом звичайного “склеювання” рядків). Це завдання для закріплення знань з алгоритмічного програмування в R.</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="15">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>lm_mod<span class="sc">$</span>coefficients <span class="co"># coefficients of the model</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <style>
@@ -608,7 +594,7 @@ F-statistic: 127.6 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 </style><dl class="dl-inline"><dt>(Intercept)</dt><dd>-5.92371064968481</dd><dt>income</dt><dd>0.00149322824686838</dd><dt>education</dt><dd>3.91351754603805</dd></dl>
 </div>
 </div>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="16">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>getLmFormula <span class="ot">&lt;-</span> <span class="cf">function</span>(lm_model) {</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  str_formula <span class="ot">&lt;-</span> <span class="fu">paste</span>(lm_model<span class="sc">$</span>terms[[<span class="dv">2</span>]], <span class="st">" = "</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
@@ -626,7 +612,7 @@ F-statistic: 127.6 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Тоді формулу можна отримати наступним чином:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="17">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>str_formula <span class="ot">&lt;-</span> <span class="fu">getLmFormula</span>(lm_mod)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(str_formula)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -636,7 +622,7 @@ F-statistic: 127.6 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>END OF DEMO TASK</p>
 <hr>
 <p>One more way to preview model info is using package <code>broom</code> and function <code>tidy()</code>:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="18">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("broom")</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -659,10 +645,10 @@ F-statistic: 127.6 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </section>
-<section id="зміна-форми-залежності" class="level3" data-number="2.4.2">
-<h3 data-number="2.4.2" class="anchored" data-anchor-id="зміна-форми-залежності"><span class="header-section-number">2.4.2</span> Зміна форми залежності</h3>
+<section id="зміна-форми-залежності" class="level3" data-number="9.4.2">
+<h3 data-number="9.4.2" class="anchored" data-anchor-id="зміна-форми-залежності"><span class="header-section-number">9.4.2</span> Зміна форми залежності</h3>
 <p>Спробуємо змінити форму залежності і побудуємо модель на основі трансформованих показників. Скористаємося логарифмуванням незалежних змінних:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="19">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>lm_mod2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="at">formula =</span> prestige <span class="sc">~</span> <span class="fu">log</span>(income) <span class="sc">+</span> <span class="fu">log</span>(education), <span class="at">data =</span> train_data)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_mod2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -690,7 +676,7 @@ F-statistic: 151.7 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p><span class="math inline">\(R^2\)</span> зріс. Тобто зміна форми залежності може впливати на якість моделі.</p>
 <p>Alert! Its depends on our <code>seed</code> parameter, because of changing train and test sets.</p>
 <p>Повернемося до попередньої моделі:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="20">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>lm_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="at">formula =</span> prestige <span class="sc">~</span> income <span class="sc">+</span> education, <span class="at">data =</span> train_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Переглянемо графік реальних даних, прогнозованих та похибок. Для початку створимо тимчасовий data.frame для генерації графіка зі значень</p>
@@ -701,7 +687,7 @@ F-statistic: 151.7 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 <li><input type="checkbox" disabled="" checked="">похибки.</li>
 </ul>
 <p>Увага! Даний графік будуватимемо на тренувальній вибірці!</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="21">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># data frame for storing data</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>tmp_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">education =</span> train_data<span class="sc">$</span>education,</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">income =</span> train_data<span class="sc">$</span>income,</span>
@@ -710,7 +696,7 @@ F-statistic: 151.7 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">residuals =</span> lm_mod<span class="sc">$</span>residuals) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Переглянемо залежності між параметрами моделі:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="22">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># prestige vs education</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tmp_data, <span class="fu">aes</span>(<span class="at">x =</span> education, <span class="at">y =</span> prestige)) <span class="sc">+</span></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend =</span> education, <span class="at">yend =</span> predicted), <span class="at">alpha =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
@@ -720,10 +706,10 @@ F-statistic: 151.7 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> predicted), <span class="at">shape =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
 <span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="031-supervised-learning-linear-regression-1_files/figure-html/cell-23-output-1.png" class="img-fluid"></p>
+<p><img src="041-unsupervised-learning-clustering-kmeans_files/figure-html/cell-23-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="23">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># prestige vs income</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tmp_data, <span class="fu">aes</span>(<span class="at">x =</span> income, <span class="at">y =</span> prestige)) <span class="sc">+</span></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend =</span> income, <span class="at">yend =</span> predicted), <span class="at">alpha =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
@@ -733,15 +719,15 @@ F-statistic: 151.7 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> predicted), <span class="at">shape =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
 <span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="031-supervised-learning-linear-regression-1_files/figure-html/cell-24-output-1.png" class="img-fluid"></p>
+<p><img src="041-unsupervised-learning-clustering-kmeans_files/figure-html/cell-24-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 </section>
 </section>
-<section id="prediction-on-test-data-and-accuracy" class="level2" data-number="2.5">
-<h2 data-number="2.5" class="anchored" data-anchor-id="prediction-on-test-data-and-accuracy"><span class="header-section-number">2.5</span> Prediction on test data and accuracy</h2>
+<section id="prediction-on-test-data-and-accuracy" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="prediction-on-test-data-and-accuracy"><span class="header-section-number">9.5</span> Prediction on test data and accuracy</h2>
 <p>Здійснимо прогноз за допомогою функції <code>predict()</code>.</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="24">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(dplyr))</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>test_predicted <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm_mod, test_data)</span>
@@ -772,7 +758,7 @@ F-statistic: 151.7 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p><code>MSE</code> (<code>Mean Squared Error</code>) – середньоквадратичне відхилення; середнє значення квадратів відхилень прогнозованих даних від реальних.</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="25">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((test_data<span class="sc">$</span>prestige <span class="sc">-</span> test_predicted)<span class="sc">^</span><span class="dv">2</span>)</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>mse</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -780,7 +766,7 @@ F-statistic: 151.7 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p><code>MAPE</code>. <code>MAPE (Mean Absolute Percentage Error)</code> – середнє абсолютне відхилення прогнозованого показника від реального:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="26">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>mape <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(test_data<span class="sc">$</span>prestige <span class="sc">-</span> test_predicted)<span class="sc">/</span>test_data<span class="sc">$</span>prestige)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>mape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -788,7 +774,7 @@ F-statistic: 151.7 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>Обчислимо метрики моделі за допомогою пакету <code>modelr</code> та функцій з нього:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="27">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(modelr))</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">R2 =</span> <span class="fu">rsquare</span>(lm_mod, <span class="at">data =</span> test_data),</span>
@@ -812,20 +798,20 @@ F-statistic: 151.7 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>Mae - Mean Absolute Error. Rmse - Root mean squared error. Детальніше: https://medium.com/human-in-a-machine-world/mae-and-rmse-which-metric-is-better-e60ac3bde13d.</p>
-<section id="перевірка-на-мультиколінераність" class="level3" data-number="2.5.1">
-<h3 data-number="2.5.1" class="anchored" data-anchor-id="перевірка-на-мультиколінераність"><span class="header-section-number">2.5.1</span> Перевірка на мультиколінераність</h3>
+<section id="перевірка-на-мультиколінераність" class="level3" data-number="9.5.1">
+<h3 data-number="9.5.1" class="anchored" data-anchor-id="перевірка-на-мультиколінераність"><span class="header-section-number">9.5.1</span> Перевірка на мультиколінераність</h3>
 <p>Зафіксуємо значення R^2 для моделі у деякій змінній:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="28">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>r_sq <span class="ot">=</span> <span class="fu">rsquare</span>(lm_mod, <span class="at">data =</span> test_data)</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>r_sq </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 0.821986517080715
 </div>
 </div>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="29">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(car))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="30">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vif</span>(lm_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <style>
@@ -838,26 +824,26 @@ F-statistic: 151.7 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>Як видно вище тут мультиколінеарність відсутня.</p>
 <p>Введемо в модель додатковий показник, що буде явно залежати від одного з факторів:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="31">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co">#lm_mod2 &lt;- lm(formula = prestige ~ income + education + income_2, data = train_data)</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(lm_mod2)</span></span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co">#rsquare(lm_mod2, data = train_data)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="32">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co">#r_sq2 &lt;- rsquare(lm_mod2, data = test_data)</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="co">#r_sq</span></span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="co">#r_sq2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>VIF-тест для моделі із корельованими змінними:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="33">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co">#vif(lm_mod2)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The best way is to exclude the biggest and rebuild model in this case.</p>
 </section>
-<section id="extending-model" class="level3" data-number="2.5.2">
-<h3 data-number="2.5.2" class="anchored" data-anchor-id="extending-model"><span class="header-section-number">2.5.2</span> Extending model</h3>
+<section id="extending-model" class="level3" data-number="9.5.2">
+<h3 data-number="9.5.2" class="anchored" data-anchor-id="extending-model"><span class="header-section-number">9.5.2</span> Extending model</h3>
 <p>Додамо до моделі категоріальний параметр type. Переглянемо можливі варіанти значень:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="34">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(train_data<span class="sc">$</span>type)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <style>
@@ -882,7 +868,7 @@ F-statistic: 151.7 on 2 and 68 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>So, its a factor. with 3 values and missing data (NA).</p>
 <p>Lets build new model with <code>type</code>:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="35">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>lm_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="at">formula =</span> prestige <span class="sc">~</span> income <span class="sc">+</span> education <span class="sc">+</span> type, <span class="at">data =</span> train_data)</span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -911,7 +897,7 @@ F-statistic: 73.59 on 4 and 64 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>З’явилися нові показники <code>typeprof</code> та <code>typewc</code>. Вони згенеровані автоматично як <code>dummy</code>-змінні функцією <code>lm()</code>. Якщо Ви хочете переглянути усі показники, що приймали участь у побудові моделі, то можна викликати $model:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="36">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>lm_mod<span class="sc">$</span>model <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 
@@ -932,7 +918,7 @@ F-statistic: 73.59 on 4 and 64 DF,  p-value: &lt; 2.2e-16</code></pre>
 </table>
 </div>
 </div>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="37">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>lm_mod<span class="sc">$</span>model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 
@@ -1011,10 +997,10 @@ F-statistic: 73.59 on 4 and 64 DF,  p-value: &lt; 2.2e-16</code></pre>
 <hr>
 </section>
 </section>
-<section id="model-errors" class="level2" data-number="2.6">
-<h2 data-number="2.6" class="anchored" data-anchor-id="model-errors"><span class="header-section-number">2.6</span> Model errors</h2>
+<section id="model-errors" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="model-errors"><span class="header-section-number">9.6</span> Model errors</h2>
 <p>Переглянемо характеристики моделі:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="38">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>lm_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="at">formula =</span> prestige <span class="sc">~</span> income <span class="sc">+</span> education <span class="sc">+</span> type, <span class="at">data =</span> train_data)</span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -1043,24 +1029,24 @@ F-statistic: 73.59 on 4 and 64 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>Сформуємо розмітку для виведення графіків 4-х графіків одразу (2*2):</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="39">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co">#par(mfrow=c(2,2))</span></span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="031-supervised-learning-linear-regression-1_files/figure-html/cell-40-output-1.png" class="img-fluid"></p>
+<p><img src="041-unsupervised-learning-clustering-kmeans_files/figure-html/cell-40-output-1.png" class="img-fluid"></p>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="031-supervised-learning-linear-regression-1_files/figure-html/cell-40-output-2.png" class="img-fluid"></p>
+<p><img src="041-unsupervised-learning-clustering-kmeans_files/figure-html/cell-40-output-2.png" class="img-fluid"></p>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="031-supervised-learning-linear-regression-1_files/figure-html/cell-40-output-3.png" class="img-fluid"></p>
+<p><img src="041-unsupervised-learning-clustering-kmeans_files/figure-html/cell-40-output-3.png" class="img-fluid"></p>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="031-supervised-learning-linear-regression-1_files/figure-html/cell-40-output-4.png" class="img-fluid"></p>
+<p><img src="041-unsupervised-learning-clustering-kmeans_files/figure-html/cell-40-output-4.png" class="img-fluid"></p>
 </div>
 </div>
 <p>На двох графіках зліва червона лінія показує середнє з відхилень. Якщо варіація похибок зростає разом із збільшенням значень прогнозу - це називається гетероскедастичніть. Прогнозування за таких умов буде давати спотворені результати. Переконаємося у відсутності гетероскедастичності перевіривши <code>p-value</code>:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="40">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(lmtest))</span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bptest</span>(lm_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -1075,51 +1061,51 @@ BP = 9.0675, df = 4, p-value = 0.05943</code></pre>
 <p><code>Normal QQ</code>-графік дозволяє перевірити чи похибки розподілені за нормальним законом розподілу. Ідеальний варіант коли вони розміщені чітко по діагональній лінії.</p>
 <p>На останньому графіку показується як кожне значення впливає на регресію. У статистиці відстань Кука є загальноприйнятою оцінкою впливу спостереження під час застосування методу найменших квадратів у регресійному аналізі.На практиці, при застосуванні методу найменших квадратів, відстань Кука може використовуватися для наступних цілей: визначити впливові спостереження даних, які потрібно перевірити на валідність; визначення областей простору, у яких непогано було б отримати більше результатів спостереження. Джерело: Detection of Influential Observation in Linear Regression / R. Dennis Cook (https://www.jstor.org/stable/1268249?origin=crossref&amp;seq=1)</p>
 <p>Повернемо розмітку для 1-го графіка у вікні RStudio:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="41">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Переглянемо розподіл похибок:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="42">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">residuals</span>(lm_mod)) </span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span><span class="dv">0</span>,<span class="at">b=</span><span class="dv">0</span>,<span class="at">col=</span><span class="st">'blue'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="031-supervised-learning-linear-regression-1_files/figure-html/cell-43-output-1.png" class="img-fluid"></p>
+<p><img src="041-unsupervised-learning-clustering-kmeans_files/figure-html/cell-43-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>Візуальних закономірностей у похибках немає. Схоже, що вони мають випадковий характер.</p>
 <hr>
 </section>
-<section id="features-selection" class="level2" data-number="2.7">
-<h2 data-number="2.7" class="anchored" data-anchor-id="features-selection"><span class="header-section-number">2.7</span> Features selection</h2>
+<section id="features-selection" class="level2" data-number="9.7">
+<h2 data-number="9.7" class="anchored" data-anchor-id="features-selection"><span class="header-section-number">9.7</span> Features selection</h2>
 <p>Ручний відбір параметрів моделі має ряд недоліків, що пов’язані із якістю моделі та затратами часу на її побудову. Вивчимо окремі алгоритми автоматизованого відбору параметрів у модель.</p>
-<section id="bestsubsets-method" class="level3" data-number="2.7.1">
-<h3 data-number="2.7.1" class="anchored" data-anchor-id="bestsubsets-method"><span class="header-section-number">2.7.1</span> BestSubsets method</h3>
+<section id="bestsubsets-method" class="level3" data-number="9.7.1">
+<h3 data-number="9.7.1" class="anchored" data-anchor-id="bestsubsets-method"><span class="header-section-number">9.7.1</span> BestSubsets method</h3>
 <p>Метод <code>BestSubsets</code> також відомий як <code>all possible regressions</code>. Цей метод відповідно до назв будує всі можливі варіанти моделей на незалежних змінних. Кількість моделей становить <span class="math inline">\(2^p\)</span>, де <span class="math inline">\(p\)</span> - кількість неазелжних змінних, так для 10 вхідних параметрів буде побудовано <span class="math inline">\(2^10 =1024\)</span> моделей.</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="43">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaps)</span>
 <span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>best_subsets_mod <span class="ot">&lt;-</span> <span class="fu">regsubsets</span>(prestige <span class="sc">~</span> income <span class="sc">+</span> education <span class="sc">+</span> type <span class="sc">+</span> women, <span class="at">data =</span> train_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Розгялнемо відібрані параметри моделі BestSubsets. По осі <code>Y</code> розміщені значення <code>BIC</code>, який обраний як якісний показник регресії, по <code>X</code> - параметри моделі:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="44">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(best_subsets_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="031-supervised-learning-linear-regression-1_files/figure-html/cell-45-output-1.png" class="img-fluid"></p>
+<p><img src="041-unsupervised-learning-clustering-kmeans_files/figure-html/cell-45-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>Найтемніша лінія вказує на найкращу модель.</p>
 <p>Перебудуємо модель для усіх можливих варіантів комбінацій параметрів:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="45">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>best_subsets_mod <span class="ot">&lt;-</span> <span class="fu">regsubsets</span>(prestige <span class="sc">~</span> income <span class="sc">+</span> education <span class="sc">+</span> type <span class="sc">+</span> women, <span class="at">data =</span> train_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Також можемо обрати кращу модель окремо за критеріями, наприклад скоригований <span class="math inline">\(R^2\)</span>:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="46">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(best_subsets_mod, <span class="at">scale =</span> <span class="st">"adjr2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="031-supervised-learning-linear-regression-1_files/figure-html/cell-47-output-1.png" class="img-fluid"></p>
+<p><img src="041-unsupervised-learning-clustering-kmeans_files/figure-html/cell-47-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>Моделі з найвищим <span class="math inline">\(R^2\)</span> обираються у такому випадку за цим критерієм, проте не варто забувати про появу мультиколінеарності.</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="47">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">summary</span>(best_subsets_mod)</span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(results<span class="sc">$</span>adjr2, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -1131,7 +1117,7 @@ BP = 9.0675, df = 4, p-value = 0.05943</code></pre>
 <ol class="list-inline"><li>0.729</li><li>0.7903</li><li>0.8129</li><li>0.8151</li><li>0.8136</li></ol>
 </div>
 </div>
-<div class="cell" data-tags="[]" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="48">
+<div class="cell" data-tags="[]" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>model_index <span class="ot">&lt;-</span> <span class="fu">which.max</span>(results<span class="sc">$</span>adjr2)</span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> results<span class="sc">$</span>which[model_index, ]</span>
 <span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(t)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1158,11 +1144,11 @@ BP = 9.0675, df = 4, p-value = 0.05943</code></pre>
 <p><code>a0 + a1*income + a2*typeprof + a3*income:typeprof + a4*education:women + a5*income:education:typeprof + a6*income:typeprof:women + a7*income:typewc:women + a8*income:education:typewc:women</code></p>
 <hr>
 </section>
-<section id="stepwise-method" class="level3" data-number="2.7.2">
-<h3 data-number="2.7.2" class="anchored" data-anchor-id="stepwise-method"><span class="header-section-number">2.7.2</span> Stepwise method</h3>
+<section id="stepwise-method" class="level3" data-number="9.7.2">
+<h3 data-number="9.7.2" class="anchored" data-anchor-id="stepwise-method"><span class="header-section-number">9.7.2</span> Stepwise method</h3>
 <p>Stepwise - метод, що перебирає можливі варіанти та повертає найкращу модель з найнижчим показником AIC. Перебір моделі може бути з виключенням або з включенням показників у модель - у обох напрямках.</p>
 <p>Для початку очистимо дані, що мають пропуски у полі type (також ці дані можна заповнити).</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="49">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(train_data)</span>
 <span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> train_data[<span class="sc">!</span><span class="fu">is.na</span>(train_data<span class="sc">$</span>type), ]</span>
 <span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(train_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1174,15 +1160,15 @@ BP = 9.0675, df = 4, p-value = 0.05943</code></pre>
 </div>
 </div>
 <p>Найпростіша модель з одним параметром (першим по списку) матиме вигляд:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="50">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>start_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(prestige <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> train_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Модель з усіма параметрами:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="51">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>end_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(prestige <span class="sc">~</span> ., <span class="at">data =</span> train_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Запустимо алгоритм функцією <code>step()</code>:</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="52">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>stepwise_mod <span class="ot">&lt;-</span> <span class="fu">step</span>(start_mod, </span>
 <span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>                     <span class="co"># set minimum and maximum parameters</span></span>
 <span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">scope =</span> <span class="fu">list</span>(<span class="at">lower =</span> start_mod, <span class="at">upper =</span> end_mod),</span>
@@ -1257,7 +1243,7 @@ prestige ~ education + income + type + census + women
 - education  1    748.59 4009.2 292.29</code></pre>
 </div>
 </div>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="53">
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
 <div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># lets see the summary</span></span>
 <span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(stepwise_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -1397,14 +1383,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./030-supervised-learning.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">ТЕМА 3. НАВЧАННЯ “З УЧИТЕЛЕМ”</span>
+      <a href="./037-supervised-learning-neural-network-classification.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Нейронні мережі. Deep Learning. Класифікація. Кредитний скоринг</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./032-supervised-learning-linear-regression-2.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Лінійна регресія. Прокат велосипедів</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->
